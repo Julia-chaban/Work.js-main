@@ -47,12 +47,12 @@
       <div class="add-form">
         <input
           type="text"
-          class="add-form-name" id="name-input"
+          class="add-form-name" 
           placeholder="Введите ваше имя"
         />
         <textarea
           type="textarea"
-          class="add-form-text" id="comment-input"
+          class="add-form-text" 
           placeholder="Введите ваш коментарий"
           rows="4"
         ></textarea>
@@ -64,42 +64,59 @@
   </body>
 
   <script>
-   
-    const nameInput = document.querySelector('#name-input');
-    const commentInput = document.querySelector('#comment-input');
+   "use strict";
+    const formName = document.querySelector('.add-form-name');
+    const formText = document.querySelector('.add-form-text');
+    const submitButton = document.querySelector('.add-form-button');
+    const commentsList = document.querySelector('.comments');
 
-    nameInput.addEventListener('input', () => console.log('Имя обновлено:', nameInput.value));
-    commentInput.addEventListener('input', () => console.log('Комментарий обновлен:', commentInput.value));
+    // 2. Добавляем обработчики событий на изменения полей ввода
+    formName.addEventListener('input', () => {
+      console.log('Имя изменено:', formName.value);
+    });
 
-    const addButton = document.querySelector('#add-btn');
-    addButton.addEventListener('click', handleAddComment);
-    const commentsList = document.querySelector('#comments-list');
+    formText.addEventListener('input', () => {
+      console.log('Комментарий изменён:', formText.value);
+    });
 
-   
-    function handleAddComment(event) {
-        event.preventDefault(); 
+    // 3. Обработчик отправки комментария
+    submitButton.addEventListener('click', (event) => {
+      event.preventDefault(); 
 
-       
-        const name = nameInput.value.trim();
-        const comment = commentInput.value.trim();
+      
+      const name = formName.value.trim();
+      const text = formText.value.trim();
 
-        if (!name || !comment) {
-            alert('Заполните поля.');
-            return;
-        }
-     const newCommentHtml = `
-            <div class="comment-item">
-                <strong>Имя пользователя:</strong> ${name}<br>
-                <p>Комментарий:</p>
-                <p>${comment}</p>
-                <small>Дата публикации: ${new Date().toLocaleString()}</small>
-                <div>Лайки: 0</div>
+      if (!name || !text) {
+        alert('Заполните поля.');
+        return;
+      }
+
+      
+      const newCommentTemplate = `
+        <li class="comment">
+          <div class="comment-header">
+            <div>${name}</div>
+            <div>${new Date().toLocaleString()}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">${text}</div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">0</span>
+              <button class="like-button"></button>
             </div>
-        `;
-        commentsList.insertAdjacentHTML('beforeend', newCommentHtml);
-         nameInput.value = '';
-        commentInput.value = '';
-    }
-   
+          </div>
+        </li>
+      `;
+
+      // 6. Добавляем новый комментарий в список
+      commentsList.innerHTML += newCommentTemplate;
+
+      // 7. Очистка полей формы
+      formName.value = '';
+      formText.value = '';
+    });
   </script>
 </html>
