@@ -65,53 +65,110 @@
 
   <script>
    "use strict";
-    const formName = document.querySelector('.add-form-name');
-    const formText = document.querySelector('.add-form-text');
-    const submitButton = document.querySelector('.add-form-button');
-    const commentsList = document.querySelector('.comments');
-
    
-    formName.addEventListener('input', () => {
-      console.log('Имя изменено:', formName.value);
-    });
+         
+        const commentsData = [
+        {
+          name: "Глеб Фокин",
+          text: "Это будет первый комментарий на этой странице",
+          liked: false,
+          likesCount: 3,
+          createdAt: "12.02.22 12:18",
+        },
+        {
+          name: "Варвара Н.",
+          text: "Мне нравится как оформлена эта страница! ❤️",
+          liked: true,
+          likesCount: 75,
+          createdAt: "13.02.22 19:22",
+        },
+      ];
 
-    formText.addEventListener('input', () => {
-      console.log('Комментарий изменён:', formText.value);
-    });
+        function renderComments(comments) {
+        const commentsList = document.querySelector('.comments');
+        commentsList.innerHTML = ""; 
 
-   
-    submitButton.addEventListener('click', (event) => {
-      event.preventDefault(); 
+        comments.forEach(comment => {
+          const template = `
+            <li class="comment">
+              <div class="comment-header">
+                <div>${comment.name}</div>
+                <div>${comment.createdAt}</div>
+              </div>
+              <div class="comment-body">
+                <div class="comment-text">${comment.text}</div>
+              </div>
+              <div class="comment-footer">
+                <div class="likes">
+                  <span class="likes-counter">${comment.likesCount}</span>
+                  <button class="like-button ${comment.liked ? '-active-like' : ''}" data-id="${comments.indexOf(comment)}"></button>
+                </div>
+              </div>
+            </li>
+          `;
+          commentsList.innerHTML += template;
+        });
+      }
+
+      const formName = document.querySelector('.add-form-name');
+      const formText = document.querySelector('.add-form-text');
+      const submitButton = document.querySelector('.add-form-button');
+
+      formName.addEventListener('input', () => {
+        console.log('Имя изменено:', formName.value);
+      });
+
+      formText.addEventListener('input', () => {
+        console.log('Комментарий изменён:', formText.value);
+      });
+
+     
+      submitButton.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        const name = formName.value.trim();
+        const text = formText.value.trim();
+
+        if (!name || !text) {
+          alert('Заполните поля.');
+          return;
+        }
+
+       const newComment = {
+          name,
+          text,
+          liked: false,
+          likesCount: 0,
+          createdAt: new Date().toLocaleString(),
+        };
+
+       
+        commentsData.push(newComment);
+        renderComments(commentsData);
+
+       
+        formName.value = '';
+        formText.value = '';
+      });
 
       
-      const name = formName.value.trim();
-      const text = formText.value.trim();
+      document.querySelector('.comments').addEventListener('click', (event) => {
+        if (event.target.classList.contains('like-button')) {
+          const commentId = event.target.dataset.id;
+          const comment = commentsData[commentId];
 
-      if (!name || !text) {
-        alert('Заполните поля.');
-        return;
-      }
-     const newCommentTemplate = `
-        <li class="comment">
-          <div class="comment-header">
-            <div>${name}</div>
-            <div>${new Date().toLocaleString()}</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">${text}</div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">0</span>
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>
-      `;
+         
+          comment.liked = !comment.liked;
 
-      commentsList.innerHTML += newCommentTemplate;
-      formName.value = '';
-      formText.value = '';
-    });
+          
+          if (comment.liked) {
+            comment.likesCount++;
+          } else {
+            comment.likesCount--;
+          }
+
+          renderComments(commentsData);
+        }
+      });
   </script>
 </html>
