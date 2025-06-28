@@ -109,6 +109,7 @@
           commentsList.innerHTML += template;
         });
       }
+      renderComments(commentsData);
 
       const formName = document.querySelector('.add-form-name');
       const formText = document.querySelector('.add-form-text');
@@ -133,35 +134,28 @@
           alert('Заполните поля.');
           return;
         }
-
-       const newComment = {
+        const newComment = {
           name,
           text,
           liked: false,
           likesCount: 0,
           createdAt: new Date().toLocaleString(),
         };
-
-       
         commentsData.push(newComment);
         renderComments(commentsData);
 
-       
         formName.value = '';
         formText.value = '';
       });
 
-      
-      document.querySelector('.comments').addEventListener('click', (event) => {
+        document.querySelector('.comments').addEventListener('click', (event) => {
         if (event.target.classList.contains('like-button')) {
           const commentId = event.target.dataset.id;
           const comment = commentsData[commentId];
 
-         
-          comment.liked = !comment.liked;
+         comment.liked = !comment.liked;
 
-          
-          if (comment.liked) {
+        if (comment.liked) {
             comment.likesCount++;
           } else {
             comment.likesCount--;
