@@ -8,66 +8,20 @@
 
   <body>
     <div class="container">
-      <ul class="comments">
-        <li class="comment">
-          <div class="comment-header">
-            <div>Глеб Фокин</div>
-            <div>12.02.22 12:18</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Это будет первый комментарий на этой странице
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">3</span>
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>
-        <li class="comment">
-          <div class="comment-header">
-            <div>Варвара Н.</div>
-            <div>13.02.22 19:22</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Мне нравится как оформлена эта страница! ❤
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">75</span>
-              <button class="like-button -active-like"></button>
-            </div>
-          </div>
-        </li>
-      </ul>
-      <div class="add-form">
-        <input
-          type="text"
-          class="add-form-name" 
-          placeholder="Введите ваше имя"
-        />
-        <textarea
-          type="textarea"
-          class="add-form-text" 
-          placeholder="Введите ваш коментарий"
-          rows="4"
-        ></textarea>
-        <div class="add-form-row">
-          <button class="add-form-button">Написать</button>
-        </div>
-      </div>
+      <ul class="comments"></ul>
+      <form class="add-form">
+        <label for="autor">Автор</label>
+        <input type="text" id="autor" class="add-form-name" placeholder="Введите ваше имя">
+        <label for="comment">Комментарий:</label>
+        <textarea id="comment" class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
+        <button class="add-form-button">Отправить</button>
+      </form>
     </div>
-  </body>
-
+          
   <script>
    "use strict";
    
-         
-        const commentsData = [
+       const commentsData = [
         {
           name: "Глеб Фокин",
           text: "Это будет первый комментарий на этой странице",
@@ -101,7 +55,7 @@
               <div class="comment-footer">
                 <div class="likes">
                   <span class="likes-counter">${comment.likesCount}</span>
-                  <button class="like-button ${comment.liked ? '-active-like' : ''}" data-id="${comments.indexOf(comment)}"></button>
+                  <button class="like-button ${comment.liked ? 'active' : ""}" data-id="${comments.indexOf(comment)}">❤️</button>
                 </div>
               </div>
             </li>
@@ -111,58 +65,43 @@
       }
       renderComments(commentsData);
 
-      const formName = document.querySelector('.add-form-name');
-      const formText = document.querySelector('.add-form-text');
-      const submitButton = document.querySelector('.add-form-button');
-
-      formName.addEventListener('input', () => {
-        console.log('Имя изменено:', formName.value);
-      });
-
-      formText.addEventListener('input', () => {
-        console.log('Комментарий изменён:', formText.value);
-      });
-
-     
-      submitButton.addEventListener('click', (event) => {
-        event.preventDefault();
-
-        const name = formName.value.trim();
-        const text = formText.value.trim();
-
-        if (!name || !text) {
-          alert('Заполните поля.');
-          return;
-        }
-        const newComment = {
-          name,
-          text,
-          liked: false,
-          likesCount: 0,
-          createdAt: new Date().toLocaleString(),
-        };
-        commentsData.push(newComment);
-        renderComments(commentsData);
-
-        formName.value = '';
-        formText.value = '';
-      });
-
-        document.querySelector('.comments').addEventListener('click', (event) => {
-        if (event.target.classList.contains('like-button')) {
-          const commentId = event.target.dataset.id;
-          const comment = commentsData[commentId];
-
-         comment.liked = !comment.liked;
-
+      document.querySelector(`.comments`).addEventListener("click", (event) => {
+        if(event.target.classList.contains("like-button")) {
+        const commentId = event.target.dataset.id;
+        const comment = commentsData[commentId];
+       
+       comment.liked = !comment.liked;
         if (comment.liked) {
-            comment.likesCount++;
-          } else {
-            comment.likesCount--;
-          }
-
-          renderComments(commentsData);
+          comment.likesCount ++;
+        } else {
+          comment.likesCount --;
         }
-      });
+        renderComments(commentsData);
+      }
+    });
+    document.querySelector(`.add-form`).addEventListener("submit" , (event) => {
+      event.preventDefault();
+      const name = document.querySelector(`.add-form-name`).value.trim();
+      const text = document.querySelector(`.add-form-text`).value.trim();
+      if (!name || !text) {
+        alert("Заполните поля");
+        return;
+      }
+      
+      const newComment = {
+        name,
+        text,
+        liked:false,
+        likesCount:0,
+        createdAt: new Date().toLocaleString(),
+      };
+      commentsData.push(newComment);
+      renderComments(commentsData);
+
+      document.querySelector(`.add-form-name`).value = "";
+      document.querySelector(`.add-form-text`).value = "";
+    });
+    
   </script>
+  </body>
 </html>
