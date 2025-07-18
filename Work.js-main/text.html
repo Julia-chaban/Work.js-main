@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить квадрат</title>
+</head>
+<body>
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .squares-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .square {
+            width: 150px;
+            height: 150px;
+            background-color: gray;
+            cursor: pointer;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+<body>
+    <div class="squares-container"></div>
+    <button onclick="createSquare()">Добавить квадрат</button>
+
+    <script>
+        function createSquare() {
+            const container = document.querySelector('.squares-container');
+            const square = document.createElement('div');
+            square.classList.add('square');
+            square.onclick = changeColor;
+            container.appendChild(square);
+        }
+
+        function changeColor(e) {
+            e.target.style.backgroundColor = getRandomHexColor();
+        }
+
+        function getRandomHexColor() {
+            return '#' + Math.floor(Math.random() * 16777215).toString(16);
+        }
+         document.querySelector('.squares-container').addEventListener('click', function(event) {
+           
+            if (!event.target.classList.contains('square')) {
+                console.log('Клик по контейнеру!');
+            }
+        });
+    </script>
+</body>
+</html>
