@@ -1,5 +1,4 @@
-"use strict";
-export const commentsData = [
+const commentsData = [
   {
     name: "Глеб Фокин",
     text: "Это будет первый комментарий на этой странице",
@@ -15,3 +14,4 @@ export const commentsData = [
     createdAt: "13.02.22 19:22",
   },
 ];
+export default commentsData;

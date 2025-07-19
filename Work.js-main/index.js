@@ -1,24 +1,4 @@
-import { renderComments } from "./renderComments.js";
-import { newComment } from "./newComments.js";
-import { querySelector } from "./querySelector.js";
-import { commentsData } from "./commentsData.js";
-
-const commentsData = [
-  {
-    name: "Глеб Фокин",
-    text: "Это будет первый комментарий на этой странице",
-    liked: false,
-    likesCount: 3,
-    createdAt: "12.02.22 12:18",
-  },
-  {
-    name: "Варвара Н.",
-    text: "Мне нравится как оформлена эта страница! ❤️",
-    liked: true,
-    likesCount: 75,
-    createdAt: "13.02.22 19:22",
-  },
-];
+import commentsData from "./commentsData.js";
 
 function renderComments(comments) {
   const commentsList = document.querySelector(".comments");
@@ -26,30 +6,31 @@ function renderComments(comments) {
 
   comments.forEach((comment) => {
     const template = `
-            <li class="comment">
-              <div class="comment-header">
-                <div>${comment.name}</div>
-                <div>${comment.createdAt}</div>
-              </div>
-              <div class="comment-body">
-                <div class="comment-text">${comment.text}</div>
-              </div>
-              <div class="comment-footer">
-                <div class="likes">
-                  <span class="likes-counter">${comment.likesCount}</span>
-                  <button class="like-button ${
-                    comment.liked ? "active" : ""
-                  }" data-id="${comments.indexOf(comment)}"></button>
-                </div>
-              </div>
-            </li>
-          `;
-    commentsList.innerHTML += template;
+      <li class="comment">
+        <div class="comment-header">
+          <div>${comment.name}</div>
+          <div>${comment.createdAt}</div>
+        </div>
+        <div class="comment-body">
+          <div class="comment-text">${comment.text}</div>
+        </div>
+        <div class="comment-footer">
+          <div class="likes">
+            <span class="likes-counter">${comment.likesCount}</span>
+            <button class="like-button ${
+              comment.liked ? "active" : ""
+            }" data-id="${comments.indexOf(comment)}"></button>
+          </div>
+        </div>
+      </li>
+    `;
+    commentsList.insertAdjacentHTML("beforeend", template);
   });
 }
+
 renderComments(commentsData);
 
-document.querySelector(`.comments`).addEventListener("click", (event) => {
+document.querySelector(".comments").addEventListener("click", (event) => {
   const commentEl = event.target.closest(".comment");
   if (commentEl && !event.target.classList.contains("like-button")) {
     const author = commentEl.querySelector(
@@ -59,13 +40,15 @@ document.querySelector(`.comments`).addEventListener("click", (event) => {
 
     document.querySelector(".add-form-name").value = "";
     document.querySelector(".add-form-text").value =
-      "@" + author + ":\n> " + text;
+      "@" + author + "\n> " + text;
   }
 });
+
 document.querySelector(".comments").addEventListener("click", (event) => {
   if (event.target.classList.contains("like-button")) {
     const likeButton = event.target;
-    const commentId = likeButton.dataset.id;
+    const commentId = Number(likeButton.dataset.id);
+
     const comment = commentsData[commentId];
 
     comment.liked = !comment.liked;
@@ -75,6 +58,7 @@ document.querySelector(".comments").addEventListener("click", (event) => {
     } else {
       comment.likesCount--;
     }
+
     likeButton.classList.toggle("active");
     likeButton.previousElementSibling.textContent = comment.likesCount;
   }
