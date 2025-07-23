@@ -1,6 +1,7 @@
 import commentsData from "./commentsData.js";
 import { renderComments } from "./renderCom.js";
 import { handleClick, handleLikeClick } from "./clickHand.js";
+
 renderComments(commentsData);
 document.querySelector(".comments").addEventListener("click", (event) => {
   handleClick(event);
