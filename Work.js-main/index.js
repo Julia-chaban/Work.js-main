@@ -1,67 +1,13 @@
 import commentsData from "./commentsData.js";
-
-function renderComments(comments) {
-  const commentsList = document.querySelector(".comments");
-  commentsList.innerHTML = "";
-
-  comments.forEach((comment) => {
-    const template = `
-      <li class="comment">
-        <div class="comment-header">
-          <div>${comment.name}</div>
-          <div>${comment.createdAt}</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">${comment.text}</div>
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter">${comment.likesCount}</span>
-            <button class="like-button ${
-              comment.liked ? "active" : ""
-            }" data-id="${comments.indexOf(comment)}"></button>
-          </div>
-        </div>
-      </li>
-    `;
-    commentsList.insertAdjacentHTML("beforeend", template);
-  });
-}
-
+import { renderComments } from "./renderCom.js";
+import { handleClick, handleLikeClick } from "./clickHand.js";
 renderComments(commentsData);
-
 document.querySelector(".comments").addEventListener("click", (event) => {
-  const commentEl = event.target.closest(".comment");
-  if (commentEl && !event.target.classList.contains("like-button")) {
-    const author = commentEl.querySelector(
-      ".comment-header div:nth-child(1)"
-    ).textContent;
-    const text = commentEl.querySelector(".comment-text").textContent;
-
-    document.querySelector(".add-form-name").value = "";
-    document.querySelector(".add-form-text").value =
-      "@" + author + "\n> " + text;
-  }
+  handleClick(event);
 });
 
 document.querySelector(".comments").addEventListener("click", (event) => {
-  if (event.target.classList.contains("like-button")) {
-    const likeButton = event.target;
-    const commentId = Number(likeButton.dataset.id);
-
-    const comment = commentsData[commentId];
-
-    comment.liked = !comment.liked;
-
-    if (comment.liked) {
-      comment.likesCount++;
-    } else {
-      comment.likesCount--;
-    }
-
-    likeButton.classList.toggle("active");
-    likeButton.previousElementSibling.textContent = comment.likesCount;
-  }
+  handleLikeClick(event, commentsData);
 });
 
 document.querySelector(".add-form").addEventListener("submit", (event) => {
