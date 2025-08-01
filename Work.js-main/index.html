@@ -1,105 +1,27 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Проект "Комменты"</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+<html lang="ru">
 
-  <body>
-    <div class="container">
-      <ul class="comments">
-        <li class="comment">
-          <div class="comment-header">
-            <div>Глеб Фокин</div>
-            <div>12.02.22 12:18</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Это будет первый комментарий на этой странице
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">3</span>
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>
-        <li class="comment">
-          <div class="comment-header">
-            <div>Варвара Н.</div>
-            <div>13.02.22 19:22</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Мне нравится как оформлена эта страница! ❤
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">75</span>
-              <button class="like-button -active-like"></button>
-            </div>
-          </div>
-        </li>
-      </ul>
-      <div class="add-form">
-        <input
-          type="text"
-          class="add-form-name" id="name-input"
-          placeholder="Введите ваше имя"
-        />
-        <textarea
-          type="textarea"
-          class="add-form-text" id="comment-input"
-          placeholder="Введите ваш коментарий"
-          rows="4"
-        ></textarea>
-        <div class="add-form-row">
-          <button class="add-form-button">Написать</button>
-        </div>
-      </div>
-    </div>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Проект " Комменты"</title>
 
-  <script>
-   
-    const nameInput = document.querySelector('#name-input');
-    const commentInput = document.querySelector('#comment-input');
+  <link rel="stylesheet" href="styles.css">
+</head>
 
-    nameInput.addEventListener('input', () => console.log('Имя обновлено:', nameInput.value));
-    commentInput.addEventListener('input', () => console.log('Комментарий обновлен:', commentInput.value));
+<body>
+  <div class="container">
+    <ul class="comments"></ul>
+    <form class="add-form">
+      <label for="autor">Автор</label>
+      <input type="text" id="autor" class="add-form-name" placeholder="Введите ваше имя">
+      <label for="commentText">Комментарий:</label>
+      <textarea id="commentText" class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
+      <button class="add-form-button">Отправить</button>
+    </form>
+  </div>
 
-    const addButton = document.querySelector('#add-btn');
-    addButton.addEventListener('click', handleAddComment);
-    const commentsList = document.querySelector('#comments-list');
+  <script type="module" src="index.js"></script>
+</body>
 
-   
-    function handleAddComment(event) {
-        event.preventDefault(); 
-
-       
-        const name = nameInput.value.trim();
-        const comment = commentInput.value.trim();
-
-        if (!name || !comment) {
-            alert('Заполните поля.');
-            return;
-        }
-     const newCommentHtml = `
-            <div class="comment-item">
-                <strong>Имя пользователя:</strong> ${name}<br>
-                <p>Комментарий:</p>
-                <p>${comment}</p>
-                <small>Дата публикации: ${new Date().toLocaleString()}</small>
-                <div>Лайки: 0</div>
-            </div>
-        `;
-        commentsList.insertAdjacentHTML('beforeend', newCommentHtml);
-         nameInput.value = '';
-        commentInput.value = '';
-    }
-   
-  </script>
 </html>
