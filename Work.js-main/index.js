@@ -8,7 +8,7 @@ async function loadComments() {
     method: "GET",
   })
     .then((response) => {
-      response.json();
+      return response.json();
     })
     .then((data) => {
       renderComments(commentsData);
