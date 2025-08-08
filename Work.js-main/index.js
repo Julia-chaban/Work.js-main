@@ -58,8 +58,7 @@ function saveNewComment(name, text) {
 }
 
 document.querySelector(".comments").addEventListener("click", (event) => {
-  handleClick(event, commentsData);
-  handleLikeClick(event, commentsData);
+  saveNewComment();
 });
 
 document.querySelector(".add-form").addEventListener("submit", (event) => {
