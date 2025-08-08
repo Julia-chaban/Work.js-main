@@ -1,79 +1,80 @@
 import commentsData from "./commentsData.js";
 import { renderComments } from "./renderComments.js";
 import { handleClick, handleLikeClick } from "./clickHand.js";
-
+window.onload = () => {
+  loadComments();
+};
 renderComments(commentsData);
-async function loadComments() {
-  try {
-    const response = await fetch(
-      "https://wedev-api.sky.pro/api/v1/julia-chaban/comments"
-    );
-
-    if (!response.ok) {
-      throw new Error(`Ошибка загрузки комментариев (${response.status})`);
-    }
-
-    const data = await response.json();
-    renderComments(data.comments);
-  } catch (error) {
-    console.error(error.message);
-    alert("Не удалось загрузить комментарии");
-  }
+function loadComments() {
+  fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
+    method: "GET",
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Ошибка загрузки комментариев (${response.status})`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Загруженные комментарии:", data.comments);
+      renderComments(data.comments);
+    })
+    .catch((error) => {
+      console.error(error.message);
+      alert("Не удалось загрузить комментарии");
+    });
 }
-async function saveNewComment(name, text) {
+
+function saveNewComment(name, text) {
   const newComment = {
     name,
     text,
     liked: false,
     likesCount: 0,
-    createdAt: new Date().toLocaleString(),
+    createdAt: new Date().toISOString(),
   };
-  try {
-    const response = await fetch(
-      "https://wedev-api.sky.pro/api/v1/julia-chaban/comments",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ comment: newComment }),
+
+  fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ comment: newComment }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Ошибка отправки комментария (${response.status})`);
       }
-    );
-    if (!response.ok) {
-      throw new Error(`Ошибка отправки комментария (${response.status})`);
-    }
-    alert("Комментарий успешно отправлен!");
-    loadComments();
-  } catch (error) {
-    console.error(error.message);
-    alert("Ошибка при отправке комментария");
-  }
+      return response.json();
+    })
+    .then(() => {
+      alert("Комментарий успешно отправлен!");
+      loadComments();
+    })
+    .catch((error) => {
+      console.error("Ошибка при отправке комментария:", error);
+      alert("Ошибка при отправке комментария");
+    });
 }
 
-window.onload = async () => {
-  await loadComments();
-  document.querySelector(".comments").addEventListener("click", (event) => {
-    handleClick(event);
-  });
+document.querySelector(".comments").addEventListener("click", (event) => {
+  handleClick(event, commentsData);
+  handleLikeClick(event, commentsData);
+});
 
-  document.querySelector(".comments").addEventListener("click", (event) => {
-    handleLikeClick(event, commentsData);
-  });
+document.querySelector(".add-form").addEventListener("submit", (event) => {
+  event.preventDefault();
 
-  document.querySelector(".add-form").addEventListener("submit", (event) => {
-    event.preventDefault();
+  const name = document.querySelector(".add-form-name").value.trim();
+  const text = document.querySelector(".add-form-text").value.trim();
 
-    const name = document.querySelector(".add-form-name").value.trim();
-    const text = document.querySelector(".add-form-text").value.trim();
+  if (!name || !text) {
+    alert("Заполните поля.");
+    return;
+  }
 
-    if (!name || !text) {
-      alert("Заполните все поля.");
-      return;
-    }
+  saveNewComment(name, text);
 
-    saveNewComment(name, text);
-
-    document.querySelector(".add-form-name").value = "";
-    document.querySelector(".add-form-text").value = "";
-  });
-};
+  document.querySelector(".add-form-name").value = "";
+  document.querySelector(".add-form-text").value = "";
+});
