@@ -25,7 +25,7 @@ function loadComments() {
     });
 }
 
-function saveNewComment(name, text) {
+function saveNewComment(comment) {
   const newComment = {
     name,
     text,
@@ -39,7 +39,7 @@ function saveNewComment(name, text) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ comment: newComment }),
+    body: JSON.stringify({ comment }),
   })
     .then((response) => {
       if (!response.ok) {
@@ -71,8 +71,17 @@ document.querySelector(".add-form").addEventListener("submit", (event) => {
     alert("Заполните поля.");
     return;
   }
+  const newComment = {
+    name,
+    text,
+    liked: false,
+    likesCount: 0,
+    createdAt: new Date().toLocaleString(),
+  };
 
-  saveNewComment(name, text);
+  commentsData.push(newComment);
+  renderComments(commentsData);
+  saveNewComment(newComment);
 
   document.querySelector(".add-form-name").value = "";
   document.querySelector(".add-form-text").value = "";
