@@ -17,7 +17,7 @@ function loadComments() {
     })
     .then((data) => {
       console.log("Загруженные комментарии:", data.comments);
-      renderComments(data.comments);
+      renderComments(commentsData);
     })
     .catch((error) => {
       console.error(error.message);
@@ -48,7 +48,7 @@ function saveNewComment(comment) {
       return response.json();
     })
     .then(() => {
-      alert("Комментарий успешно отправлен!");
+      alert("Комментарий успешно отправлен");
       loadComments();
     })
     .catch((error) => {
@@ -58,31 +58,33 @@ function saveNewComment(comment) {
 }
 
 document.querySelector(".comments").addEventListener("click", (event) => {
-  saveNewComment();
+  saveNewComment(comment);
 });
 
-document.querySelector(".add-form").addEventListener("submit", (event) => {
-  event.preventDefault();
+document
+  .querySelector(".add-form")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  const name = document.querySelector(".add-form-name").value.trim();
-  const text = document.querySelector(".add-form-text").value.trim();
+    const name = document.querySelector(".add-form-name").value.trim();
+    const text = document.querySelector(".add-form-text").value.trim();
 
-  if (!name || !text) {
-    alert("Заполните поля.");
-    return;
-  }
-  const newComment = {
-    name,
-    text,
-    liked: false,
-    likesCount: 0,
-    createdAt: new Date().toLocaleString(),
-  };
+    if (!name || !text) {
+      alert("Заполните поля.");
+      return;
+    }
+    const newComment = {
+      name,
+      text,
+      liked: false,
+      likesCount: 0,
+      createdAt: new Date().toLocaleString(),
+    };
 
-  commentsData.push(newComment);
-  renderComments(commentsData);
-  saveNewComment(newComment);
+    commentsData.push(newComment);
+    renderComments(commentsData);
+    saveNewComment(newComment);
 
-  document.querySelector(".add-form-name").value = "";
-  document.querySelector(".add-form-text").value = "";
-});
+    document.querySelector(".add-form-name").value = "";
+    document.querySelector(".add-form-text").value = "";
+  });
