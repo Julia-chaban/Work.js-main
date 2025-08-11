@@ -4,7 +4,7 @@ import { handleClick, handleLikeClick } from "./clickHand.js";
 window.onload = () => {
   loadComments();
 };
-renderComments(commentsData);
+
 function loadComments() {
   fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
     method: "GET",
