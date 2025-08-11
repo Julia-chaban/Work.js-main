@@ -17,29 +17,17 @@ function loadComments() {
     })
     .then((data) => {
       console.log("Загруженные комментарии:", data.comments);
-      renderComments(commentsData);
+      renderComments(data.comments);
     })
     .catch((error) => {
       console.error(error.message);
-      alert("Не удалось загрузить комментарии");
+      alert("Не удалось загрузить комментарий");
     });
 }
-
 function saveNewComment(comment) {
-  const newComment = {
-    name,
-    text,
-    liked: false,
-    likesCount: 0,
-    createdAt: new Date().toISOString(),
-  };
-
   fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ comment }),
+    body: JSON.stringify({ name: comment.name, text: comment.text }),
   })
     .then((response) => {
       if (!response.ok) {
@@ -81,7 +69,6 @@ document
       createdAt: new Date().toLocaleString(),
     };
 
-    commentsData.push(newComment);
     renderComments(commentsData);
     saveNewComment(newComment);
 
