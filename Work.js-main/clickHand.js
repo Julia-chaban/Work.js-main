@@ -1,4 +1,6 @@
-export function handleClick(event) {
+import { renderComments } from "./renderComments";
+
+export function handleClick(event, commentsById) {
   const commentEl = event.target.closest(`comment`);
   if (commentEl && !event.target.classList.contains("like-button")) {
     const author = commentEl.querySelector(

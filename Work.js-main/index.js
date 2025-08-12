@@ -1,6 +1,7 @@
 import commentsData from "./commentsData.js";
 import { renderComments } from "./renderComments.js";
 import { handleClick, handleLikeClick } from "./clickHand.js";
+
 window.onload = () => {
   loadComments();
 };
@@ -16,7 +17,7 @@ function loadComments() {
       return response.json();
     })
     .then((data) => {
-      console.log("Загруженные комментарии:", data.comments);
+      console.log("Загруженные комментарии", data.comments);
       renderComments(data.comments);
     })
     .catch((error) => {
@@ -24,6 +25,7 @@ function loadComments() {
       alert("Не удалось загрузить комментарий");
     });
 }
+
 function saveNewComment(comment) {
   fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
     method: "POST",
@@ -48,30 +50,29 @@ function saveNewComment(comment) {
 document.querySelector(".comments").addEventListener("click", (event) => {
   saveNewComment(comment);
 });
-
 document
   .querySelector(".add-form")
   .addEventListener("submit", async (event) => {
     event.preventDefault();
-
-    const name = document.querySelector(".add-form-name").value.trim();
-    const text = document.querySelector(".add-form-text").value.trim();
-
-    if (!name || !text) {
-      alert("Заполните поля.");
-      return;
-    }
-    const newComment = {
-      name,
-      text,
-      liked: false,
-      likesCount: 0,
-      createdAt: new Date().toLocaleString(),
-    };
-
-    renderComments(commentsData);
-    saveNewComment(newComment);
-
-    document.querySelector(".add-form-name").value = "";
-    document.querySelector(".add-form-text").value = "";
   });
+
+const name = document.querySelector(".add-form-name").value.trim();
+const text = document.querySelector(".add-form-text").value.trim();
+
+if (!name || !text) {
+  alert("Заполните поля.");
+  return;
+}
+const newComment = {
+  name,
+  text,
+  liked: false,
+  likesCount: 0,
+  createdAt: new Date().toLocaleString(),
+};
+
+renderComments(commentsData);
+saveNewComment(newComment);
+
+document.querySelector(".add-form-name").value = "";
+document.querySelector(".add-form-text").value = "";
