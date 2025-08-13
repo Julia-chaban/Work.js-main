@@ -25,7 +25,6 @@ function loadComments() {
       alert("Не удалось загрузить комментарий");
     });
 }
-
 function saveNewComment(comment) {
   fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
     method: "POST",
@@ -71,7 +70,7 @@ const newComment = {
   createdAt: new Date().toLocaleString(),
 };
 
-renderComments(commentsData);
+renderComments(data.comments);
 saveNewComment(newComment);
 
 document.querySelector(".add-form-name").value = "";

@@ -1,5 +1,5 @@
-import { renderComments } from "./renderComments";
-
+import { renderComments } from "./renderComments.js";
+import commentsData from "./commentsData.js";
 export function handleClick(event, commentsById) {
   const commentEl = event.target.closest(`comment`);
   if (commentEl && !event.target.classList.contains("like-button")) {
