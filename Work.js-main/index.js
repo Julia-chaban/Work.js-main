@@ -18,6 +18,7 @@ function loadComments() {
     })
     .then((data) => {
       console.log("Загруженные комментарии", data.comments);
+
       renderComments(data.comments);
     })
     .catch((error) => {
@@ -53,25 +54,24 @@ document
   .querySelector(".add-form")
   .addEventListener("submit", async (event) => {
     event.preventDefault();
+
+    const name = document.querySelector(".add-form-name").value.trim();
+    const text = document.querySelector(".add-form-text").value.trim();
+
+    if (!name || !text) {
+      alert("Заполните поля.");
+      return;
+    }
+    const newComment = {
+      name,
+      text,
+      liked: false,
+      likesCount: 0,
+      createdAt: new Date().toLocaleString(),
+    };
+
+    saveNewComment(newComment);
+
+    document.querySelector(".add-form-name").value = "";
+    document.querySelector(".add-form-text").value = "";
   });
-
-const name = document.querySelector(".add-form-name").value.trim();
-const text = document.querySelector(".add-form-text").value.trim();
-
-if (!name || !text) {
-  alert("Заполните поля.");
-  return;
-}
-const newComment = {
-  name,
-  text,
-  liked: false,
-  likesCount: 0,
-  createdAt: new Date().toLocaleString(),
-};
-
-renderComments(data.comments);
-saveNewComment(newComment);
-
-document.querySelector(".add-form-name").value = "";
-document.querySelector(".add-form-text").value = "";
