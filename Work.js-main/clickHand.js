@@ -7,26 +7,39 @@ export function handleClick(event) {
     const text = commentEl.querySelector(".comment-text").textContent;
 
     document.querySelector(".add-form-name").value = "";
-    document.querySelector(".add-form-text").value =
-      "@" + author + "\n> " + text;
+
+    document.querySelector(".add-form-text").value = `@ ${author} \n > ${text}`;
   }
 }
-export function handleLikeClick(event, commentsData) {
+export function handleLikeClick(event, comments) {
   if (event.target.classList.contains("like-button")) {
-    const likeButton = event.target;
-    const commentId = Number(likeButton.dataset.id);
+    const button = event.target;
+    const commentIndex = parseInt(button.dataset.commentIndex);
 
-    const comment = commentsData[commentId];
+    if (
+      typeof commentIndex === "number" &&
+      commentIndex >= 0 &&
+      commentIndex < comments.length
+    ) {
+      const comment = comments[commentIndex];
 
-    comment.liked = !comment.liked;
+      comment.isLiked = !comment.isLiked;
 
-    if (comment.liked) {
-      comment.likesCount++;
+      if (comment.isLiked) {
+        comment.likes++;
+      } else {
+        comment.likes--;
+        if (comment.likes < 0) {
+          comment.likes = 0;
+        }
+      }
+      const counter = button.parentNode.querySelector(".likes-counter");
+      if (counter) {
+        counter.textContent = comment.likes.toString();
+      }
+      button.classList.toggle("active");
     } else {
-      comment.likesCount--;
+      console.warn("Недопустимый индекс комментария!");
     }
-
-    likeButton.classList.toggle("active");
-    likeButton.previousElementSibling.textContent = comment.likesCount;
   }
 }

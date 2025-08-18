@@ -1,10 +1,17 @@
 import commentsData from "./commentsData.js";
-import { renderComments } from "./renderComments.js";
+import { renderComments, refreshInterface } from "./renderComments.js";
 import { handleClick, handleLikeClick } from "./clickHand.js";
-
+import { updateUI } from "./renderComments.js";
 window.onload = () => {
   loadComments();
 };
+function updatedHandleLikeClick(event, comments) {
+  handleLikeClick(event, comments);
+  refreshInterface(comments); // Получаем доступ к refreshInterface через импорт
+}
+
+// Присваиваем новую версию обработчику оконного события
+window.handleLikeClick = updatedHandleLikeClick;
 
 function loadComments() {
   fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
@@ -24,6 +31,7 @@ function loadComments() {
     .catch((error) => {
       console.error(error.message);
       alert("Не удалось загрузить комментарий");
+      renderComments(commentsData);
     });
 }
 function saveNewComment(comment) {
@@ -57,12 +65,13 @@ document.querySelector(".add-form").addEventListener("submit", (event) => {
     alert("Заполните поля.");
     return;
   }
+  
   const newComment = {
     name,
     text,
     liked: false,
-    likesCount: 0,
-    createdAt: new Date().toLocaleString(),
+    like: false,
+    date: new Date().toLocaleString(),
   };
 
   saveNewComment(newComment);
