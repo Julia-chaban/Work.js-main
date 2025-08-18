@@ -47,31 +47,26 @@ function saveNewComment(comment) {
     });
 }
 
-document.querySelector(".comments").addEventListener("click", (event) => {
-  saveNewComment(comment);
+document.querySelector(".add-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const name = document.querySelector(".add-form-name").value.trim();
+  const text = document.querySelector(".add-form-text").value.trim();
+
+  if (!name || !text) {
+    alert("Заполните поля.");
+    return;
+  }
+  const newComment = {
+    name,
+    text,
+    liked: false,
+    likesCount: 0,
+    createdAt: new Date().toLocaleString(),
+  };
+
+  saveNewComment(newComment);
+
+  document.querySelector(".add-form-name").value = "";
+  document.querySelector(".add-form-text").value = "";
 });
-document
-  .querySelector(".add-form")
-  .addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const name = document.querySelector(".add-form-name").value.trim();
-    const text = document.querySelector(".add-form-text").value.trim();
-
-    if (!name || !text) {
-      alert("Заполните поля.");
-      return;
-    }
-    const newComment = {
-      name,
-      text,
-      liked: false,
-      likesCount: 0,
-      createdAt: new Date().toLocaleString(),
-    };
-
-    saveNewComment(newComment);
-
-    document.querySelector(".add-form-name").value = "";
-    document.querySelector(".add-form-text").value = "";
-  });

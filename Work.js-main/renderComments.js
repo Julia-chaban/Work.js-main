@@ -6,8 +6,8 @@ export function renderComments(comments) {
     const template = `
 <li class="comment">
 <div class="comment-header">
-<div>${comment.name}</div>
-<div>${comment.createdAt}</div>
+<div>${comment.author.name}</div>
+<div>${comment.date.createdAt}</div>
 </div>
 <div class="comment-body">
 <div class="comment-text">${comment.text}</div>
