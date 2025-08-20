@@ -3,14 +3,6 @@ import { renderComments, refreshInterface } from "./renderComments.js";
 import { handleClick, handleLikeClick } from "./clickHand.js";
 import { updateUI } from "./renderComments.js";
 
-function showLoader() {
-  document.getElementById("loader").style.display = "block";
-}
-
-function hideLoader() {
-  document.getElementById("loader").style.display = "none";
-}
-
 function fetchComments() {
   return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments")
     .then((response) => {
@@ -23,43 +15,46 @@ function fetchComments() {
 }
 
 function loadComments() {
-  showLoader();
   fetchComments()
     .then((comments) => {
       console.log("Загруженные комментарии", comments);
       renderComments(comments);
-      hideLoader();
     })
     .catch((error) => {
       console.error(error.message);
       alert("Не удалось загрузить комментарий");
       renderComments(commentsData);
-      hideLoader();
     });
 }
-
+button.disabled = true;
+button.textContent = "создание задачи...";
 function saveNewComment(comment) {
-  showLoader();
   fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
     method: "POST",
 
     body: JSON.stringify({ name: comment.name, text: comment.text }),
   })
+    .then(() => {
+      return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
+        method: "GET",
+      });
+
+      // if (!response.ok) {
+      //throw new Error(`Ошибка отправки комментария (${response.status})`);
+    })
     .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Ошибка отправки комментария (${response.status})`);
-      }
       return response.json();
     })
-    .then(() => {
-      alert("Комментарий успешно отправлен");
-      loadComments();
-      hideLoader();
+    .then((data) => {
+      return response.json();
     })
     .catch((error) => {
       console.error("Ошибка при отправке комментария:", error);
       alert("Ошибка при отправке комментария");
-      hideLoader();
+      button.disabled = false;
+      button.textContent = "Добавить";
+
+      loadComments();
     });
 }
 

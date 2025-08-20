@@ -45,7 +45,6 @@ export function updateUI(comments) {
   });
 }
 
-// Перемещаем функцию refreshInterface сюда
 export function refreshInterface(comments) {
-  updateUI(comments); // Обновляем UI после любого изменения
+  updateUI(comments);
 }
