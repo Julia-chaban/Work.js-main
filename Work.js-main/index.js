@@ -37,7 +37,7 @@ function loadComments() {
   fetchComments()
     .then((comments) => {
       console.log("Загруженные комментарии", comments);
-      if (Array.isArray(comments) || comments.lenght === 0) {
+      if (Array.isArray(comments) || comments.length === 0) {
         comments = commentsData;
         console.warn("Нет комментариев с сервера, используем резервные данные");
       }
@@ -116,14 +116,15 @@ document.querySelector(".add-form").addEventListener("submit", (event) => {
   document.querySelector(".add-form-text").value = "";
 });
 
-document.querySelectorAll(".like-button").forEach((button) => {
-  button.addEventListener("click", (event) => {
+document.querySelectorAll(".container").addEventListener("click", (event) => {
+  if (event.target.classList.contains(".like-button")) {
     const currentComments = [...document.querySelectorAll(".comment")].map(
       (el) => el.dataset.commentId
     );
     updatedHandleLikeClick(event, currentComments);
-  });
+  }
 });
+
 window.onload = () => {
   loadComments();
 };
