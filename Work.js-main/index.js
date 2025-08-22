@@ -17,7 +17,11 @@ function getsComments() {
   })
     .then((response) => {
       if (!response.ok) {
-        throw new Error(`Ошибка загрузки комментариев (${response.status})`);
+        if (response.status === 500) {
+          throw new Error("Сервер временно недоступен.Попробуйте позже.");
+        } else {
+          throw new Error(`Ошибка загрузки комментариев (${response.status})`);
+        }
       }
       return response.json();
     })
@@ -26,27 +30,20 @@ function getsComments() {
         throw new Error("Комментарии не найдены в ответе сервера");
       }
       return data.comments;
-    });
+    })
+    .catch((error) => {
+      console.error(error.message);
+      alert(error.message);
+      return commentsData;
+    })
+    .finally(hideGlobalLoader);
 }
 
 function loadComments() {
   showGlobalLoader();
-  getsComments()
-    .then((comments) => {
-      console.log("Загруженные комментарии", comments);
-      if (Array.isArray(comments) && comments.length === 0) {
-        comments = commentsData;
-        console.warn("Нет комментариев с сервера, используем резервные данные");
-      }
-      renderComments(comments);
-      hideGlobalLoader();
-    })
-    .catch((error) => {
-      console.error(error.message);
-      alert("Не удалось загрузить комментарий");
-      renderComments(commentsData);
-      hideGlobalLoader();
-    });
+  getsComments().then((comments) => {
+    renderComments(comments);
+  });
 }
 
 function saveNewComment(comment) {
@@ -55,33 +52,45 @@ function saveNewComment(comment) {
   fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
     method: "POST",
 
-    body: JSON.stringify({ name: comment.name, text: comment.text }),
+    body: JSON.stringify({
+      name: comment.name,
+      text: comment.text,
+      forceError: true,
+    }),
   })
-    .then(() => {
+    .then((response) => {
+      if (!response.ok) {
+        if (response.status === 400) {
+          throw new Error("Произошла ошибка.Проверьте правильность ввода");
+        } else if (response.status === 500) {
+          throw new Error("На сервере произошла ошибка.Попробуйте позже");
+        } else {
+          throw new Error(
+            `Ошибка при отправке комментария(${response.status})`
+          );
+        }
+      }
       return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
         method: "GET",
       });
     })
-    .then((response) => {
-      return response.json();
+    .then((updateResponse) => {
+      if (!updateResponse.ok) {
+        throw new Error(
+          `Ошибка обновления комментариев(${updateResponse.status})`
+        );
+      }
+      return updateResponse.json();
     })
-    .then((data) => {
-      const comments = data.comments;
-      console.log("Обновленные комментарии", comments);
+    .then((updatedData) => {
+      const comments = updatedData.comments;
       renderComments(comments);
-      hideGlobalLoader();
     })
     .catch((error) => {
-      console.error("Ошибка при отправке комментария:", error);
-      alert("Ошибка при отправке комментария");
-      hideGlobalLoader();
-    });
-}
-
-function updatedHandleLikeClick(event, comments) {
-  handleLikeClick(event, comments);
-  refreshInterface(comments);
-  window.handleLikeClick = updatedHandleLikeClick;
+      console.error(error.message);
+      alert(error.message);
+    })
+    .finally(hideGlobalLoader);
 }
 
 document.querySelector(".add-form").addEventListener("submit", (event) => {
@@ -103,11 +112,13 @@ document.querySelector(".add-form").addEventListener("submit", (event) => {
     date: new Date().toLocaleString(),
   };
 
-  saveNewComment(newComment);
-
-  document.querySelector(".add-form-name").value = "";
-  document.querySelector(".add-form-text").value = "";
+  saveNewComment(newComment).then(() => {});
 });
+function updatedHandleLikeClick(event, comments) {
+  handleLikeClick(event, comments);
+  refreshInterface(comments);
+  window.handleLikeClick = updatedHandleLikeClick;
+}
 
 document.querySelectorAll(".like-button").forEach((button) => {
   button.addEventListener("click", (event) => {
