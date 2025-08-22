@@ -5,7 +5,7 @@ export function renderComments(comments) {
 
   comments.forEach((comment, index) => {
     const template = `
-<li class="comment">
+<li class="comment" data-comment-index="${index}">
 <div class="comment-header">
 <div>${comment.author.name}</div>
 <div>${new Date(comment.date).toLocaleString()}</div>
@@ -33,14 +33,14 @@ export function renderComments(comments) {
 }
 export function updateUI(comments) {
   comments.forEach((comment, i) => {
-    const btn = document.querySelector(
-      `.like-button[data-comment-index='${i}']`
-    );
+    const item = document.querySelector(`.comment[data-comment-index='${i}]`);
+    const btn = item?.document.querySelector(".like - button");
+    const counter = bth?.previousElementSibling;
     if (btn) {
-      const count = btn.previousElementSibling;
-      if (count) {
-        count.textContent = `${comment.likes}`;
-      }
+      btn.classList.toggle("active", comment.isLiked);
+    }
+    if (counter) {
+      counter.textContent = comment.likes.toString();
     }
   });
 }

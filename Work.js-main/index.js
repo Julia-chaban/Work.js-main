@@ -10,34 +10,31 @@ function showGlobalLoader() {
 function hideGlobalLoader() {
   document.getElementById("global-loader").style.display = "none";
 }
-function fetchComments() {
-  return (
-    fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments"),
-    {
-      method: "GET",
-    }
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Ошибка загрузки комментариев (${response.status})`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.comments) {
-          return data.comments;
-        } else {
-          throw new Error("Комментарии не найдены в ответе сервера");
-        }
-      })
-  );
+
+function getsComments() {
+  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
+    method: "GET",
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Ошибка загрузки комментариев (${response.status})`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.comments) {
+        throw new Error("Комментарии не найдены в ответе сервера");
+      }
+      return data.comments;
+    });
 }
 
 function loadComments() {
   showGlobalLoader();
-  fetchComments()
+  getsComments()
     .then((comments) => {
       console.log("Загруженные комментарии", comments);
-      if (Array.isArray(comments) || comments.length === 0) {
+      if (Array.isArray(comments) && comments.length === 0) {
         comments = commentsData;
         console.warn("Нет комментариев с сервера, используем резервные данные");
       }
@@ -54,7 +51,6 @@ function loadComments() {
 
 function saveNewComment(comment) {
   const form = document.querySelector("add-form");
-  form.style.display = "none";
   showGlobalLoader();
   fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
     method: "POST",
@@ -74,14 +70,11 @@ function saveNewComment(comment) {
       console.log("Обновленные комментарии", comments);
       renderComments(comments);
       hideGlobalLoader();
-      form.style.display = "block";
     })
     .catch((error) => {
       console.error("Ошибка при отправке комментария:", error);
       alert("Ошибка при отправке комментария");
       hideGlobalLoader();
-
-      form.style.display = "block";
     });
 }
 
@@ -105,8 +98,8 @@ document.querySelector(".add-form").addEventListener("submit", (event) => {
   const newComment = {
     name,
     text,
-    liked: 0,
-    liked: false,
+    likes: 0,
+    isLiked: false,
     date: new Date().toLocaleString(),
   };
 
@@ -116,13 +109,13 @@ document.querySelector(".add-form").addEventListener("submit", (event) => {
   document.querySelector(".add-form-text").value = "";
 });
 
-document.querySelectorAll(".container").addEventListener("click", (event) => {
-  if (event.target.classList.contains(".like-button")) {
+document.querySelectorAll(".like-button").forEach((button) => {
+  button.addEventListener("click", (event) => {
     const currentComments = [...document.querySelectorAll(".comment")].map(
       (el) => el.dataset.commentId
     );
     updatedHandleLikeClick(event, currentComments);
-  }
+  });
 });
 
 window.onload = () => {
