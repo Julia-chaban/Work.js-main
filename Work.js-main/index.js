@@ -1,7 +1,24 @@
-import commentsData from "./commentsData.js";
+import { getComments, postComment } from "./api.js";
 import { renderComments, refreshInterface } from "./renderComments.js";
-import { handleClick, handleLikeClick } from "./clickHand.js";
-import { updateUI } from "./renderComments.js";
+import { handleLikeClick } from "./clickHand.js";
+const demoComments = [
+  {
+    id: "demo-cmt1",
+    name: "Глеб Фокин",
+    text: "Это будет первый комментарий на этой странице!",
+    likes: 3,
+    isLiked: false,
+    date: "12.02.22 12:18",
+  },
+  {
+    id: "demo-cmt2",
+    name: "Варвара Н.",
+    text: "Мне нравится как оформлена эта страница! ❤️",
+    likes: 75,
+    isLiked: true,
+    date: "13.02.22 19:22",
+  },
+];
 
 function showGlobalLoader() {
   document.getElementById("global-loader").style.display = "block";
@@ -11,86 +28,49 @@ function hideGlobalLoader() {
   document.getElementById("global-loader").style.display = "none";
 }
 
-function getsComments() {
-  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
-    method: "GET",
-  })
-    .then((response) => {
-      if (!response.ok) {
-        if (response.status === 500) {
-          throw new Error("Сервер временно недоступен.Попробуйте позже.");
-        } else {
-          throw new Error(`Ошибка загрузки комментариев (${response.status})`);
-        }
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (data.comments) {
-        throw new Error("Комментарии не найдены в ответе сервера");
-      }
-      return data.comments;
-    })
-    .catch((error) => {
-      console.error(error.message);
-      alert(error.message);
-      return commentsData;
-    })
-    .finally(hideGlobalLoader);
-}
-
 function loadComments() {
   showGlobalLoader();
-  getsComments().then((comments) => {
-    renderComments(comments);
-  });
-}
-
-function saveNewComment(comment) {
-  const form = document.querySelector("add-form");
-  showGlobalLoader();
-  fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
-    method: "POST",
-
-    body: JSON.stringify({
-      name: comment.name,
-      text: comment.text,
-      forceError: true,
-    }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        if (response.status === 400) {
-          throw new Error("Произошла ошибка.Проверьте правильность ввода");
-        } else if (response.status === 500) {
-          throw new Error("На сервере произошла ошибка.Попробуйте позже");
-        } else {
-          throw new Error(
-            `Ошибка при отправке комментария(${response.status})`
-          );
-        }
+  getComments()
+    .then((comments) => {
+      if (comments.length > 0) {
+        renderComments(comments);
+      } else {
+        renderComments(demoComments);
       }
-      return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
-        method: "GET",
-      });
-    })
-    .then((updateResponse) => {
-      if (!updateResponse.ok) {
-        throw new Error(
-          `Ошибка обновления комментариев(${updateResponse.status})`
-        );
-      }
-      return updateResponse.json();
-    })
-    .then((updatedData) => {
-      const comments = updatedData.comments;
-      renderComments(comments);
     })
     .catch((error) => {
-      console.error(error.message);
-      alert(error.message);
+      console.error("Ошибка при загрузке комментария", error);
+      alert("Ошибка при загрузке комментария.Попробуйте еще раз.");
     })
-    .finally(hideGlobalLoader);
+    .finally(() => {
+      hideGlobalLoader();
+    });
+}
+setInterval(() => {
+  const commentsContainer = document.querySelector(".comments");
+  const firstComment = commentsContainer.firstElementChild;
+  if (firstComment) {
+    commentsContainer.removeChild(firstComment);
+  }
+}, 10 * 1000);
+
+function saveNewComment(comment) {
+  showGlobalLoader();
+  postComment(comment)
+    .then((result) => {
+      if (result && Array.isArray(result.comments)) {
+        renderComments(result.comments);
+      } else {
+        alert("Ошибка при отправке комментария.Попробуйте еще раз");
+      }
+    })
+    .catch((error) => {
+      console.error("Ошибка при отправке комментария", error);
+      alert("Ошибка при отправке комментария.Попробуйте еще раз.");
+    })
+    .finally(() => {
+      hideGlobalLoader();
+    });
 }
 
 document.querySelector(".add-form").addEventListener("submit", (event) => {
@@ -105,30 +85,27 @@ document.querySelector(".add-form").addEventListener("submit", (event) => {
   }
 
   const newComment = {
-    name,
-    text,
+    name: name,
+    text: text,
     likes: 0,
     isLiked: false,
     date: new Date().toLocaleString(),
   };
 
-  saveNewComment(newComment).then(() => {});
+  saveNewComment(newComment);
+  document.querySelector(".add-form-name").value = "";
+  document.querySelector(".add-form-text").value = "";
 });
-function updatedHandleLikeClick(event, comments) {
-  handleLikeClick(event, comments);
-  refreshInterface(comments);
-  window.handleLikeClick = updatedHandleLikeClick;
-}
 
 document.querySelectorAll(".like-button").forEach((button) => {
   button.addEventListener("click", (event) => {
     const currentComments = [...document.querySelectorAll(".comment")].map(
       (el) => el.dataset.commentId
     );
-    updatedHandleLikeClick(event, currentComments);
+    handleLikeClick(event, currentComments);
+    refreshInterface(currentComments);
   });
 });
-
 window.onload = () => {
   loadComments();
 };
