@@ -1,57 +1,75 @@
-import commentsData from "./commentsData.js";
+import { getComments, postComment } from "./api.js";
 import { renderComments, refreshInterface } from "./renderComments.js";
-import { handleClick, handleLikeClick } from "./clickHand.js";
-import { updateUI } from "./renderComments.js";
-window.onload = () => {
-  loadComments();
-};
-function updatedHandleLikeClick(event, comments) {
-  handleLikeClick(event, comments);
-  refreshInterface(comments); // Получаем доступ к refreshInterface через импорт
+import { handleLikeClick } from "./clickHand.js";
+const demoComments = [
+  {
+    id: "demo-cmt1",
+    name: "Глеб Фокин",
+    text: "Это будет первый комментарий на этой странице!",
+    likes: 3,
+    isLiked: false,
+    date: "12.02.22 12:18",
+  },
+  {
+    id: "demo-cmt2",
+    name: "Варвара Н.",
+    text: "Мне нравится как оформлена эта страница! ❤️",
+    likes: 75,
+    isLiked: true,
+    date: "13.02.22 19:22",
+  },
+];
+
+function showGlobalLoader() {
+  document.getElementById("global-loader").style.display = "block";
 }
 
-// Присваиваем новую версию обработчику оконного события
-window.handleLikeClick = updatedHandleLikeClick;
+function hideGlobalLoader() {
+  document.getElementById("global-loader").style.display = "none";
+}
 
 function loadComments() {
-  fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
-    method: "GET",
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Ошибка загрузки комментариев (${response.status})`);
+  showGlobalLoader();
+  getComments()
+    .then((comments) => {
+      if (comments.length > 0) {
+        renderComments(comments);
+      } else {
+        renderComments(demoComments);
       }
-      return response.json();
-    })
-    .then((data) => {
-      console.log("Загруженные комментарии", data.comments);
-
-      renderComments(data.comments);
     })
     .catch((error) => {
-      console.error(error.message);
-      alert("Не удалось загрузить комментарий");
-      renderComments(commentsData);
+      console.error("Ошибка при загрузке комментария", error);
+      alert("Ошибка при загрузке комментария.Попробуйте еще раз.");
+    })
+    .finally(() => {
+      hideGlobalLoader();
     });
 }
+setInterval(() => {
+  const commentsContainer = document.querySelector(".comments");
+  const firstComment = commentsContainer.firstElementChild;
+  if (firstComment) {
+    commentsContainer.removeChild(firstComment);
+  }
+}, 10 * 1000);
+
 function saveNewComment(comment) {
-  fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
-    method: "POST",
-    body: JSON.stringify({ name: comment.name, text: comment.text }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Ошибка отправки комментария (${response.status})`);
+  showGlobalLoader();
+  postComment(comment)
+    .then((result) => {
+      if (result && Array.isArray(result.comments)) {
+        renderComments(result.comments);
+      } else {
+        alert("Ошибка при отправке комментария.Попробуйте еще раз");
       }
-      return response.json();
-    })
-    .then(() => {
-      alert("Комментарий успешно отправлен");
-      loadComments();
     })
     .catch((error) => {
-      console.error("Ошибка при отправке комментария:", error);
-      alert("Ошибка при отправке комментария");
+      console.error("Ошибка при отправке комментария", error);
+      alert("Ошибка при отправке комментария.Попробуйте еще раз.");
+    })
+    .finally(() => {
+      hideGlobalLoader();
     });
 }
 
@@ -65,17 +83,29 @@ document.querySelector(".add-form").addEventListener("submit", (event) => {
     alert("Заполните поля.");
     return;
   }
-  
+
   const newComment = {
-    name,
-    text,
-    liked: false,
-    like: false,
+    name: name,
+    text: text,
+    likes: 0,
+    isLiked: false,
     date: new Date().toLocaleString(),
   };
 
   saveNewComment(newComment);
-
   document.querySelector(".add-form-name").value = "";
   document.querySelector(".add-form-text").value = "";
 });
+
+document.querySelectorAll(".like-button").forEach((button) => {
+  button.addEventListener("click", (event) => {
+    const currentComments = [...document.querySelectorAll(".comment")].map(
+      (el) => el.dataset.commentId
+    );
+    handleLikeClick(event, currentComments);
+    refreshInterface(currentComments);
+  });
+});
+window.onload = () => {
+  loadComments();
+};

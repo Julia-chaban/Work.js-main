@@ -10,18 +10,21 @@
 </head>
 
 <body>
-  <div class="container">
-    <ul class="comments"></ul>
-    <form class="add-form">
-      <label for="autor">Автор</label>
-      <input type="text" id="autor" class="add-form-name" placeholder="Введите ваше имя">
-      <label for="commentText">Комментарий:</label>
-      <textarea id="commentText" class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
-      <button class="add-form-button">Отправить</button>
-    </form>
-  </div>
+  <ul class="comments">
+  </ul>
+  <form class=" add-form">
+    <label for="author">Автор</label>
+    <input type="text" id="author" class="add-form-name" placeholder="Введите ваше имя">
+    <label for="comment">Комментарий:</label>
+    <textarea id="comment" class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
 
-  <script type="module" src="index.js"></script>
+    <button class="add-form-button">Отправить</button>
+  </form>
+  </div>
+  <div id="global-loader" style="display:none;">Loading... </div>
+
+  <script type="module" src="index.js">
+  </script>
 </body>
 
 </html>
