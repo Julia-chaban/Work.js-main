@@ -28,9 +28,10 @@ export function postComment(comment) {
       }
       return response.json();
     })
+    .then((data) => ({ success: true, comments: data }))
     .catch((error) => {
       console.error(error.message);
       alert(error.message);
-      return {};
+      return { success: false };
     });
 }

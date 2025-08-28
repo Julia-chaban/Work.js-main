@@ -1,9 +1,10 @@
 import { getComments, postComment } from "./api.js";
 import { renderComments, refreshInterface } from "./renderComments.js";
 import { handleLikeClick } from "./clickHand.js";
+
 const demoComments = [
   {
-    id: "demo-cmt1",
+    id: "cmt1",
     name: "Глеб Фокин",
     text: "Это будет первый комментарий на этой странице!",
     likes: 3,
@@ -11,7 +12,7 @@ const demoComments = [
     date: "12.02.22 12:18",
   },
   {
-    id: "demo-cmt2",
+    id: "cmt2",
     name: "Варвара Н.",
     text: "Мне нравится как оформлена эта страница! ❤️",
     likes: 75,
@@ -46,20 +47,13 @@ function loadComments() {
       hideGlobalLoader();
     });
 }
-setInterval(() => {
-  const commentsContainer = document.querySelector(".comments");
-  const firstComment = commentsContainer.firstElementChild;
-  if (firstComment) {
-    commentsContainer.removeChild(firstComment);
-  }
-}, 10 * 1000);
 
 function saveNewComment(comment) {
   showGlobalLoader();
   postComment(comment)
     .then((result) => {
-      if (result && Array.isArray(result.comments)) {
-        renderComments(result.comments);
+      if (result.success) {
+        loadComments();
       } else {
         alert("Ошибка при отправке комментария.Попробуйте еще раз");
       }
@@ -93,6 +87,7 @@ document.querySelector(".add-form").addEventListener("submit", (event) => {
   };
 
   saveNewComment(newComment);
+
   document.querySelector(".add-form-name").value = "";
   document.querySelector(".add-form-text").value = "";
 });
