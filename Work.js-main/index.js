@@ -77,7 +77,10 @@ document.querySelector(".add-form").addEventListener("submit", (event) => {
     alert("Заполните поля.");
     return;
   }
-
+  if (text.length < 3) {
+    alert("Комментарий должен содержать минимум три символа.");
+    return;
+  }
   const newComment = {
     name: name,
     text: text,
