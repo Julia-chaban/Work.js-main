@@ -20,20 +20,24 @@ const demoComments = [
     date: "13.02.22 19:22",
   },
 ];
-
-function showGlobalLoader() {
-  document.getElementById("global-loader").style.display = "block";
+function showGlobalLoader(text) {
+  const loadingScreen = document.getElementById("loading-screen");
+  loadingScreen.classList.remove("hidden");
+  loadingScreen.innerText = text || "Загрузка...";
 }
 
 function hideGlobalLoader() {
-  document.getElementById("global-loader").style.display = "none";
+  setTimeout(() => {
+    const loadingScreen = document.getElementById("loading-screen");
+    loadingScreen.classList.add("hidden");
+  }, 1000);
 }
 
 function loadComments() {
-  showGlobalLoader();
+  showGlobalLoader("Загрузка комментариев...");
   getComments()
     .then((comments) => {
-      if (comments.length > 0) {
+      if (Array.isArray(comments) && comments.length > 0) {
         renderComments(comments);
       } else {
         renderComments(demoComments);
@@ -49,8 +53,22 @@ function loadComments() {
 }
 
 function saveNewComment(comment) {
-  showGlobalLoader();
+  showGlobalLoader("Отправка комментария...");
   postComment(comment)
+    .then((response) => {
+      if (!response.ok) {
+        if (response.status === 400) {
+          alert("Некорректный запрос. Проверьте введённые данные.");
+        } else if (response.status === 500) {
+          alert("Ошибка на сервере. Попробуйте повторить попытку позднее.");
+        } else {
+          alert(`Произошла ошибка при отправке комментария:${response.status}`);
+        }
+        throw new Error(`Ошибка при отправке комментария:${response.status}`);
+      }
+      return response.json();
+    })
+
     .then((result) => {
       if (result.success) {
         loadComments();

@@ -10,10 +10,14 @@
 </head>
 
 <body>
+
   <div class="container">
     <ul class=" comments">
     </ul>
     <form class=" add-form">
+      <div id="loading-screen" class="hidden">
+        <p>Загрузка комментариев...</p>
+      </div>
       <label for="author">Автор</label>
       <input type="text" id="author" class="add-form-name" placeholder="Введите ваше имя">
       <label for="comment">Комментарий:</label>

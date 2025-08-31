@@ -4,11 +4,14 @@ export function renderComments(comments) {
   const commentsList = document.querySelector(".comments");
   commentsList.innerHTML = "";
 
+  if (!comments || comments.length === 0) {
+    return;
+  }
   comments.forEach((comment, index) => {
     const template = `
      <li class="comment" data-comment-index="${index}">
      <div class="comment-header">
-      <div>${comment.author.name}</div>
+      <div>${comment.name}</div>
       <div>${new Date(comment.date).toLocaleString()}</div>
       </div>
       <div class="comment-body">
