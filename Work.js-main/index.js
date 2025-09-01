@@ -55,20 +55,6 @@ function loadComments() {
 function saveNewComment(comment) {
   showGlobalLoader("Отправка комментария...");
   postComment(comment)
-    .then((response) => {
-      if (!response.ok) {
-        if (response.status === 400) {
-          alert("Некорректный запрос. Проверьте введённые данные.");
-        } else if (response.status === 500) {
-          alert("Ошибка на сервере. Попробуйте повторить попытку позднее.");
-        } else {
-          alert(`Произошла ошибка при отправке комментария:${response.status}`);
-        }
-        throw new Error(`Ошибка при отправке комментария:${response.status}`);
-      }
-      return response.json();
-    })
-
     .then((result) => {
       if (result.success) {
         loadComments();
@@ -76,6 +62,7 @@ function saveNewComment(comment) {
         alert("Ошибка при отправке комментария.Попробуйте еще раз");
       }
     })
+
     .catch((error) => {
       console.error("Ошибка при отправке комментария", error);
       alert("Ошибка при отправке комментария.Попробуйте еще раз.");
