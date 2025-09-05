@@ -11,9 +11,9 @@ export function renderComments(comments) {
     const template = `
      <li class="comment" data-comment-index="${index}">
      <div class="comment-header">
-      <div>${comment.name}</div>
+      <div>${comment.author.name}</div>
       <div>${new Date(comment.date).toLocaleString()}</div>
-      </div>
+      </div> 
       <div class="comment-body">
       <div class="comment-text">${comment.text}</div>
       </div>
