@@ -1,8 +1,10 @@
 .hidden {
   display: none;
+
 }
 
 #loading-screen {
+
   position: relative;
   width: 100%;
   height: 50px;
