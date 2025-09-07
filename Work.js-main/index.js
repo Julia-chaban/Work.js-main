@@ -54,19 +54,32 @@ function loadComments() {
     });
 }
 
-function saveNewComment(comment) {
+function saveNewComment(commentData) {
   showGlobalLoader("Отправка комментария...");
 
-  postComment(comment)
+  const fullComment = {
+    ...commentData,
+    likes: 0,
+    isLiked: false,
+    date: new Date().toLocaleString(),
+  };
+
+  postComment(fullComment)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`Ошибка при отправке комментария: ${response.status}`);
       }
       return response.json();
     })
-    .then((updatedComments) => {
-      allComments = updatedComments;
-      renderComments(updatedComments);
+    .then((data) => {
+      if (data?.result === "ok") {
+        allComments.push(fullComment);
+        renderComments(allComments);
+      } else {
+        throw new Error(
+          `Ошибка при отправке комментария: ${data.message || "Нет данных"}`
+        );
+      }
     })
     .catch((error) => {
       console.error("Ошибка при отправке комментария:", error);
@@ -91,15 +104,20 @@ document.querySelector(".add-form").addEventListener("submit", (event) => {
     alert("Комментарий должен содержать минимум три символа.");
     return;
   }
-  const newComment = {
+  const commentData = {
     name: name,
     text: text,
-    likes: 0,
-    isLiked: false,
-    date: new Date().toLocaleString(),
   };
+  saveNewComment(commentData);
+  //  const newComment = {
+  // name: name,
+  // text: text,
+  // likes: 0,
+  //isLiked: false,
+  //date: new Date().toLocaleString(),
+  // };
 
-  saveNewComment(newComment);
+  //saveNewComment(newComment);//
 
   document.querySelector(".add-form-name").value = "";
   document.querySelector(".add-form-text").value = "";

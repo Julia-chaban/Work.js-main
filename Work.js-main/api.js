@@ -12,7 +12,7 @@ export function getComments() {
 export function postComment(comment) {
   return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
     method: "POST",
-    ders: { "Content-Type": "application/json" },
+
     body: JSON.stringify(comment),
   })
     .then((response) => {
@@ -33,13 +33,13 @@ export function postComment(comment) {
         }
 
         alert(message);
-        throw new Error(message); // Бросаем ошибку дальше в цепочку обработки
+        throw new Error(message);
       }
-      return response.json(); // Возвращаем результат в виде JSON
+      return response.json();
     })
     .catch((error) => {
       console.error("Ошибка при отправке комментария:", error);
       alert("Ошибка при отправке комментария. Попробуйте снова.");
-      throw error; // Передадим ошибку дальше цепочке обработчиков
+      throw error;
     });
 }
