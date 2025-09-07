@@ -25,14 +25,12 @@ let allComments = [];
 function showGlobalLoader(text) {
   const loadingScreen = document.getElementById("loading-screen");
   loadingScreen.classList.remove("hidden");
-  loadingScreen.innerText = text || "Загрузка...";
+  loadingScreen.innerText = text || "Загрузка";
 }
 
 function hideGlobalLoader() {
-  setTimeout(() => {
-    const loadingScreen = document.getElementById("loading-screen");
-    loadingScreen.classList.add("hidden");
-  }, 1000);
+  const loadingScreen = document.getElementById("loading-screen");
+  loadingScreen.classList.add("hidden");
 }
 
 function loadComments() {
@@ -59,24 +57,20 @@ function loadComments() {
 function saveNewComment(comment) {
   showGlobalLoader("Отправка комментария...");
 
-  allComments.unshift(comment);
-  renderComments(allComments);
-
   postComment(comment)
     .then((response) => {
-      if (response.result === "ok") {
-        console.log("Комментарий успешно отправлен.");
-      } else {
-        console.error(
-          "Ответ сервера не содержит информации",
-          response.message || response.error || "Неизвестная ошибка."
-        );
-        alert("Ошибка при отправке комментария.Попробуйте еще раз.");
+      if (!response.ok) {
+        throw new Error(`Ошибка при отправке комментария: ${response.status}`);
       }
+      return response.json();
+    })
+    .then((updatedComments) => {
+      allComments = updatedComments;
+      renderComments(updatedComments);
     })
     .catch((error) => {
-      console.error("Ошибка при отправке комментария", error);
-      alert("Ошибка при отправке комментария.Попробуйте еще раз.");
+      console.error("Ошибка при отправке комментария:", error);
+      alert("Ошибка при отправке комментария. Попробуйте еще раз.");
     })
     .finally(() => {
       hideGlobalLoader();

@@ -1,13 +1,13 @@
 const commentsData = [
   {
-    name: "Глеб Фокин",
+    author: { name: "Глеб Фокин" },
     text: "Это будет первый комментарий на этой странице",
     likes: 3,
     isLiked: false,
     date: "12.02.22 12:18",
   },
   {
-    name: "Варвара Н.",
+    author: { name: "Варвара Н." },
     text: "Мне нравится как оформлена эта страница! ❤️",
     likes: 75,
     isLiked: true,
