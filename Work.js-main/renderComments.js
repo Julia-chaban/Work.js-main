@@ -7,9 +7,11 @@ export function renderComments(comments) {
   if (!comments || comments.length === 0) {
     return;
   }
+  comments.sort((a, b) => a.date.localeCompare(b.date));
+
   comments.forEach((comment, index) => {
     const template = `
-     <li class="comment" data-comment-index="${index}">
+     <li class="comment" data-comment-id="${comment.id}">
      <div class="comment-header">
       <div>${comment.author.name}</div>
       <div>${new Date(comment.date).toLocaleString()}</div>

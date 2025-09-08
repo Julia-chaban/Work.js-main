@@ -15,6 +15,11 @@ export function postComment(comment) {
 
     body: JSON.stringify(comment),
   })
+    .then(() => {
+      return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
+        method: "GET",
+      });
+    })
     .then((response) => {
       if (!response.ok) {
         let message = "";

@@ -54,17 +54,10 @@ function loadComments() {
     });
 }
 
-function saveNewComment(commentData) {
+function saveNewComment(comment) {
   showGlobalLoader("Отправка комментария...");
 
-  const fullComment = {
-    ...commentData,
-    likes: 0,
-    isLiked: false,
-    date: new Date().toLocaleString(),
-  };
-
-  postComment(fullComment)
+  postComment(comment)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`Ошибка при отправке комментария: ${response.status}`);
@@ -72,14 +65,7 @@ function saveNewComment(commentData) {
       return response.json();
     })
     .then((data) => {
-      if (data?.result === "ok") {
-        allComments.push(fullComment);
-        renderComments(allComments);
-      } else {
-        throw new Error(
-          `Ошибка при отправке комментария: ${data.message || "Нет данных"}`
-        );
-      }
+      loadComments();
     })
     .catch((error) => {
       console.error("Ошибка при отправке комментария:", error);
@@ -90,34 +76,30 @@ function saveNewComment(commentData) {
     });
 }
 
-document.querySelector(".add-form").addEventListener("submit", (event) => {
-  event.preventDefault();
+document.querySelector(".add-form").addEventListener("submit", (e) => {
+  e.preventDefault();
 
-  const name = document.querySelector(".add-form-name").value.trim();
-  const text = document.querySelector(".add-form-text").value.trim();
+  const authorInput = document.querySelector(".add-form-name").value.trim();
+  const textInput = document.querySelector(".add-form-text").value.trim();
 
-  if (!name || !text) {
+  if (!authorInput || !textInput) {
     alert("Заполните поля.");
     return;
   }
-  if (text.length < 3) {
+  if (textInput.length < 3) {
     alert("Комментарий должен содержать минимум три символа.");
     return;
   }
-  const commentData = {
-    name: name,
-    text: text,
-  };
-  saveNewComment(commentData);
-  //  const newComment = {
-  // name: name,
-  // text: text,
-  // likes: 0,
-  //isLiked: false,
-  //date: new Date().toLocaleString(),
-  // };
 
-  //saveNewComment(newComment);//
+  const newComment = {
+    name: authorInput,
+    text: textInput,
+    likes: 0,
+    isLiked: false,
+    date: new Date().toLocaleString(),
+  };
+
+  saveNewComment(newComment);
 
   document.querySelector(".add-form-name").value = "";
   document.querySelector(".add-form-text").value = "";
@@ -135,3 +117,28 @@ document.querySelectorAll(".like-button").forEach((button) => {
 window.onload = () => {
   loadComments();
 };
+const loginForm = document.querySelector(".login");
+const addForm = document.querySelector(".add-form");
+
+// Проверяем статус авторизации
+if (localStorage.getItem("isLoggedIn") === "true") {
+  // Если пользователь авторизован, прячем форму авторизации и показываем форму отправки комментария
+  loginForm.classList.add("hidden");
+  addForm.classList.remove("hidden");
+} else {
+  // Иначе показываем форму авторизации и скрываем форму отправки комментария
+  loginForm.classList.remove("hidden");
+  addForm.classList.add("hidden");
+}
+
+// Далее добавляем слушатель события submit на форму авторизации
+document.querySelector("#loginForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  // Простая имитация успешной авторизации
+  localStorage.setItem("isLoggedIn", true);
+
+  // Скрываем форму авторизации и показываем форму отправки комментария
+  loginForm.classList.add("hidden");
+  addForm.classList.remove("hidden");
+});
