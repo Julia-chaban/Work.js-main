@@ -2,9 +2,9 @@ import { refreshInterface } from "./renderComments.js";
 
 export function handleLikeClick(event, comments) {
   const button = event.target;
-  const index = button.dataset.commentIndex;
+  const index = parseInt(button.dataset.commentIndex, 10);
 
-  if (typeof index === "string" && index >= 0 && index < comments.length) {
+  if (Number.isInteger(index) && index >= 0 && index < comments.length) {
     const comment = comments[index];
 
     comment.isLiked = !comment.isLiked;

@@ -8,43 +8,41 @@ export function getComments() {
     return response.json();
   });
 }
-
 export function postComment(comment) {
   return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
     method: "POST",
 
     body: JSON.stringify(comment),
   })
-    .then(() => {
-      return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
-        method: "GET",
-      });
-    })
     .then((response) => {
       if (!response.ok) {
-        let message = "";
+        let errorMessage = "";
 
-        switch (response.status) {
-          case 400:
-            message = "Некорректный запрос. Проверьте введенные данные.";
-            break;
-
-          case 500:
-            message = "Ошибка на сервере. Повторите попытку позже.";
-            break;
-
-          default:
-            message = `Произошла ошибка при отправке комментария (${response.status})`;
+        if (response.status === 400) {
+          errorMessage =
+            "Неверный запрос. Проверьте правильность введённых данных.";
+        } else if (response.status === 401) {
+          errorMessage = "Не авторизованы. Необходимо войти в систему.";
+        } else if (response.status === 403) {
+          errorMessage = "Доступ запрещён. Возможно, истек срок сессии.";
+        } else if (response.status === 404) {
+          errorMessage = "Ресурс не найден. Обратитесь к администратору.";
+        } else if (response.status === 500) {
+          errorMessage =
+            "Ошибка на стороне сервера. Попробуйте повторить действие позднее.";
+        } else {
+          errorMessage = `Произошла неизвестная ошибка (${response.status}). Попробуйте повторно.`;
         }
 
-        alert(message);
-        throw new Error(message);
+        alert(errorMessage);
+        throw new Error(errorMessage);
       }
+
       return response.json();
     })
     .catch((error) => {
-      console.error("Ошибка при отправке комментария:", error);
-      alert("Ошибка при отправке комментария. Попробуйте снова.");
+      console.error("Ошибка при отправке комментария:", error.message);
+      alert("Возникла ошибка при отправке комментария. Попробуйте снова.");
       throw error;
     });
 }

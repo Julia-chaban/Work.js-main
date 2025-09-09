@@ -1,5 +1,6 @@
 const commentsData = [
   {
+    id: "cmt1",
     author: { name: "Глеб Фокин" },
     text: "Это будет первый комментарий на этой странице",
     likes: 3,
@@ -7,6 +8,7 @@ const commentsData = [
     date: "12.02.22 12:18",
   },
   {
+    id: "cmt2",
     author: { name: "Варвара Н." },
     text: "Мне нравится как оформлена эта страница! ❤️",
     likes: 75,
