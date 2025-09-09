@@ -4,6 +4,7 @@ import { handleLikeClick } from "./clickHand.js";
 
 const demoComments = [
   {
+    id: "cmt1",
     name: "Глеб Фокин",
     text: "Это будет первый комментарий на этой странице!",
     likes: 3,
@@ -11,6 +12,7 @@ const demoComments = [
     date: "12.02.22 12:18",
   },
   {
+    id: "cmt2",
     name: "Варвара Н.",
     text: "Мне нравится как оформлена эта страница! ❤️",
     likes: 75,
@@ -39,7 +41,9 @@ function loadComments() {
       if (response?.comments && Array.isArray(response.comments)) {
         allComments = response.comments;
       } else {
-        allComments = demoComments;
+        console.warn(
+          "Сервер не предоставил комментарии.Используем существующие данные."
+        );
       }
       renderComments(allComments);
     })
@@ -63,10 +67,13 @@ function saveNewComment(comment) {
       return response.json();
     })
     .then((data) => {
+      console.log("Данные полученные после отправки", data);
+      allComments = data.comments || [];
+      renderComments(allComments);
       loadComments();
     })
     .catch((error) => {
-      console.error("Ошибка при отправке комментария:", error.message);
+      console.error("Ошибка при отправке комментария:", error);
       alert("Ошибка при отправке комментария. Попробуйте еще раз.");
     })
     .finally(() => {
@@ -90,8 +97,8 @@ document.querySelector(".add-form").addEventListener("submit", (e) => {
   }
 
   const newComment = {
-    name: name,
-    text: text,
+    name,
+    text,
     likes: 0,
     isLiked: false,
     date: new Date().toLocaleString(),
