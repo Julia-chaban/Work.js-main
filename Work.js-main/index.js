@@ -60,21 +60,16 @@ function saveNewComment(comment) {
   showGlobalLoader("Отправка комментария...");
 
   postComment(comment)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Ошибка при отправке комментария: ${response.status})`);
-      }
-      return response.json();
-    })
     .then((data) => {
-      console.log("Данные полученные после отправки", data);
-      allComments = data.comments || [];
-      renderComments(allComments);
-      loadComments();
+      if (data?.comments && Array.isArray(data.comments)) {
+        allComments = data.comments;
+        renderComments(allComments);
+      }
+      return loadComments();
     })
     .catch((error) => {
       console.error("Ошибка при отправке комментария:", error);
-      alert("Ошибка при отправке комментария. Попробуйте еще раз.");
+      alert("Ошибка при отправке комментария. Попробуйте ещё раз.");
     })
     .finally(() => {
       hideGlobalLoader();
@@ -110,15 +105,6 @@ document.querySelector(".add-form").addEventListener("submit", (e) => {
   document.querySelector(".add-form-text").value = "";
 });
 
-document.querySelectorAll(".like-button").forEach((button) => {
-  button.addEventListener("click", (event) => {
-    const currentComments = [...document.querySelectorAll(".comment")].map(
-      (el) => el.dataset.commentId
-    );
-    handleLikeClick(event, currentComments);
-    refreshInterface(currentComments);
-  });
-});
 window.onload = () => {
   loadComments();
 };
