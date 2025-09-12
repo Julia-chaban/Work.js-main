@@ -98,6 +98,21 @@ document.querySelector(".add-form").addEventListener("submit", (e) => {
   document.querySelector(".add-form-text").value = "";
 });
 
+document.querySelector("#loginForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const email = document
+    .querySelector("#loginForm input[type='email']")
+    .value.trim();
+  const password = document
+    .querySelector("#loginForm input[type='password']")
+    .value.trim();
+
+  //setAuthToken(" https://wedev-api.sky.pro/api/user/login");
+
+  document.querySelector(".login").classList.add("hidden");
+  document.querySelector(".add-form").classList.remove("hidden");
+});
 window.onload = () => {
   loadComments();
 };

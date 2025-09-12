@@ -2,10 +2,13 @@ let AUTH_TOKEN = "";
 
 export function setAuthToken(token) {
   AUTH_TOKEN = token || "";
+  //localStorage.setItem("authToken", token);
 }
-
+//export function getAuthToken() {
+//return AUTH_TOKEN;
+//}
 export function getComments() {
-  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
+  return fetch("https://wedev-api.sky.pro/api/v2/julia-chaban/comments", {
     method: "GET",
   }).then((response) => {
     if (!response.ok) {
@@ -19,7 +22,7 @@ export function postComment(comment) {
   const headers = {};
   if (AUTH_TOKEN) headers["Authorization"] = AUTH_TOKEN;
 
-  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
+  return fetch("https://wedev-api.sky.pro/api/v2/julia-chaban/comments ", {
     method: "POST",
     headers,
     body: JSON.stringify(comment),

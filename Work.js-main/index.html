@@ -12,6 +12,14 @@
 <body>
 
   <div class="container">
+    <div class="login">
+      <h2>Вход</h2>
+      <form id="loginForm">
+        <input type="email" placeholder="Email" required />
+        <input type="password" placeholder="Пароль" required />
+        <button type="submit">Войти</button>
+      </form>
+    </div>
 
     <ul class=" comments">
     </ul>
@@ -20,14 +28,14 @@
       <p>Загрузка комментариев...</p>
     </div>
     <form class="add-form hidden">
-      <form class=" add-form" style="display: none;">
-        <label for="author">Автор</label>
-        <input type="text" id="author" class="add-form-name" placeholder="Введите ваше имя">
-        <label for="comment">Комментарий:</label>
-        <textarea id="comment" class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
 
-        <button class="add-form-button">Отправить</button>
-      </form>
+      <label for="author">Автор</label>
+      <input type="text" id="author" class="add-form-name" placeholder="Введите ваше имя">
+      <label for="comment">Комментарий:</label>
+      <textarea id="comment" class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
+
+      <button class="add-form-button">Отправить</button>
+    </form>
   </div>
 
   <div id="global-loader">Loading... </div>
