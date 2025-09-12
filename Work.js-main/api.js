@@ -42,7 +42,7 @@ export function postComment(comment) {
           errorMessage =
             "Неизвестная ошибка (${response.status}). Попробуйте снова.";
         }
-        alert(errorMessage);
+
         throw new Error(errorMessage);
       }
       return response.json();

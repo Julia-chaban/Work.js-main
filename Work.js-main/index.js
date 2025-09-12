@@ -67,10 +67,7 @@ function saveNewComment(comment) {
       }
       return loadComments();
     })
-    .catch((error) => {
-      console.error("Ошибка при отправке комментария:", error);
-      alert("Ошибка при отправке комментария. Попробуйте ещё раз.");
-    })
+
     .finally(() => {
       hideGlobalLoader();
     });
@@ -84,10 +81,6 @@ document.querySelector(".add-form").addEventListener("submit", (e) => {
 
   if (!name || !text) {
     alert("Заполните поля.");
-    return;
-  }
-  if (text.length < 3) {
-    alert("Комментарий должен содержать минимум три символа.");
     return;
   }
 
