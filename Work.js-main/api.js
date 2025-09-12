@@ -2,14 +2,12 @@ let AUTH_TOKEN = "";
 
 export function setAuthToken(token) {
   AUTH_TOKEN = token || "";
-  //localStorage.setItem("authToken", token);
 }
-//export function getAuthToken() {
-//return AUTH_TOKEN;
-//}
+
 export function getComments() {
-  return fetch("https://wedev-api.sky.pro/api/v2/julia-chaban/comments", {
+  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
     method: "GET",
+    Authorization: `Bearer ${AUTH_TOKEN}`,
   }).then((response) => {
     if (!response.ok) {
       throw new Error(`Ошибка при загрузке комментариев: ${response.status}`);
@@ -22,7 +20,7 @@ export function postComment(comment) {
   const headers = {};
   if (AUTH_TOKEN) headers["Authorization"] = AUTH_TOKEN;
 
-  return fetch("https://wedev-api.sky.pro/api/v2/julia-chaban/comments ", {
+  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments ", {
     method: "POST",
     headers,
     body: JSON.stringify(comment),
@@ -42,10 +40,9 @@ export function postComment(comment) {
         } else if (response.status === 500) {
           errorMessage = "Ошибка на стороне сервера. Попробуйте позднее.";
         } else {
-          errorMessage =
-            "Неизвестная ошибка (${response.status}). Попробуйте снова.";
+          errorMessage = `Неизвестная ошибка (${response.status}). Попробуйте снова.`;
         }
-
+        alert(errorMessage);
         throw new Error(errorMessage);
       }
       return response.json();

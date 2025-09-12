@@ -67,7 +67,10 @@ function saveNewComment(comment) {
       }
       return loadComments();
     })
-
+    //.catch((error) => {
+    //console.error("Ошибка при отправке комментария:", error);
+    //alert("Возникла ошибка при отправке комментария. Попробуйте снова.");
+    //})
     .finally(() => {
       hideGlobalLoader();
     });
@@ -107,8 +110,6 @@ document.querySelector("#loginForm").addEventListener("submit", (e) => {
   const password = document
     .querySelector("#loginForm input[type='password']")
     .value.trim();
-
-  //setAuthToken(" https://wedev-api.sky.pro/api/user/login");
 
   document.querySelector(".login").classList.add("hidden");
   document.querySelector(".add-form").classList.remove("hidden");
