@@ -17,6 +17,12 @@ export function getComments() {
 }
 
 export function postComment(comment) {
+  const formNameField = document.querySelector(".add-form-name");
+  const formTextField = document.querySelector(".add-form-text");
+
+  const originalName = formNameField.value.trim();
+  const originalText = formTextField.value.trim();
+
   const headers = {};
   if (AUTH_TOKEN) headers["Authorization"] = AUTH_TOKEN;
 
@@ -27,10 +33,12 @@ export function postComment(comment) {
   })
     .then((response) => {
       if (!response.ok) {
+        formNameField.value = originalName;
+        formTextField.value = originalText;
+
         let errorMessage = "";
         if (response.status === 400) {
-          errorMessage =
-            "Неверный запрос. Проверьте правильность введённых данных.";
+          errorMessage = `Неверный запрос. Проверьте правильность введённых данных.`;
         } else if (response.status === 401) {
           errorMessage = "Не авторизованы. Необходимо войти в систему.";
         } else if (response.status === 403) {
@@ -42,7 +50,6 @@ export function postComment(comment) {
         } else {
           errorMessage = `Неизвестная ошибка (${response.status}). Попробуйте снова.`;
         }
-        alert(errorMessage);
         throw new Error(errorMessage);
       }
       return response.json();

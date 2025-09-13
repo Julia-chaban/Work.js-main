@@ -61,16 +61,11 @@ function saveNewComment(comment) {
 
   postComment(comment)
     .then((data) => {
-      if (data?.comments && Array.isArray(data.comments)) {
-        allComments = data.comments;
-        renderComments(allComments);
-      }
-      return loadComments();
+      allComments = data.comments;
+      renderComments(allComments);
+      loadComments();
     })
-    //.catch((error) => {
-    //console.error("Ошибка при отправке комментария:", error);
-    //alert("Возникла ошибка при отправке комментария. Попробуйте снова.");
-    //})
+
     .finally(() => {
       hideGlobalLoader();
     });
@@ -101,19 +96,6 @@ document.querySelector(".add-form").addEventListener("submit", (e) => {
   document.querySelector(".add-form-text").value = "";
 });
 
-document.querySelector("#loginForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  const email = document
-    .querySelector("#loginForm input[type='email']")
-    .value.trim();
-  const password = document
-    .querySelector("#loginForm input[type='password']")
-    .value.trim();
-
-  document.querySelector(".login").classList.add("hidden");
-  document.querySelector(".add-form").classList.remove("hidden");
-});
 window.onload = () => {
   loadComments();
 };
