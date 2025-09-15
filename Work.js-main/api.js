@@ -5,9 +5,11 @@ export function setAuthToken(token) {
 }
 
 export function getComments() {
-  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
+  return fetch("https://wedev-api.sky.pro/api/v2/julia-chaban/comments", {
     method: "GET",
-    Authorization: `Bearer ${AUTH_TOKEN}`,
+    headers: {
+      Authorization: `Bearer ${AUTH_TOKEN}`,
+    },
   }).then((response) => {
     if (!response.ok) {
       throw new Error(`Ошибка при загрузке комментариев: ${response.status}`);
@@ -17,25 +19,13 @@ export function getComments() {
 }
 
 export function postComment(comment) {
-  const formNameField = document.querySelector(".add-form-name");
-  const formTextField = document.querySelector(".add-form-text");
-
-  const originalName = formNameField.value.trim();
-  const originalText = formTextField.value.trim();
-
-  const headers = {};
-  if (AUTH_TOKEN) headers["Authorization"] = AUTH_TOKEN;
-
-  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments ", {
+  return fetch("https://wedev-api.sky.pro/api/v2/julia-chaban/comments ", {
     method: "POST",
-    headers,
+
     body: JSON.stringify(comment),
   })
     .then((response) => {
       if (!response.ok) {
-        formNameField.value = originalName;
-        formTextField.value = originalText;
-
         let errorMessage = "";
         if (response.status === 400) {
           errorMessage = `Неверный запрос. Проверьте правильность введённых данных.`;

@@ -1,4 +1,4 @@
-import { getComments, postComment } from "./api.js";
+import { getComments, postComment, setAuthToken } from "./api.js";
 import { renderComments, refreshInterface } from "./renderComments.js";
 import { handleLikeClick } from "./clickHand.js";
 
@@ -69,6 +69,23 @@ function saveNewComment(comment) {
       hideGlobalLoader();
     });
 }
+const loginForm = document.querySelector("#loginForm");
+const addForm = document.querySelector(".add-form");
+
+function checkAutorization() {
+  if (localStorage.getItem("isLoggedIn") === "true") {
+    loginForm.classList.add("hidden");
+    addForm.classList.remove("hidden");
+  } else {
+    loginForm.classList.remove("hidden");
+    addForm.classList.add("hidden");
+  }
+}
+document.querySelector("#loginForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  localStorage.setItem("isLoggedIn", true);
+  checkAutorization();
+});
 
 document.querySelector(".add-form").addEventListener("submit", (e) => {
   e.preventDefault();
@@ -96,5 +113,6 @@ document.querySelector(".add-form").addEventListener("submit", (e) => {
 });
 
 window.onload = () => {
+  checkAutorization();
   loadComments();
 };
