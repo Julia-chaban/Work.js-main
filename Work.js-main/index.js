@@ -60,8 +60,7 @@ function saveNewComment(comment) {
   showGlobalLoader("Отправка комментария...");
 
   postComment(comment)
-    .then((data) => {
-      allComments = data.comments;
+    .then(() => {
       renderComments(allComments);
       loadComments();
     })
