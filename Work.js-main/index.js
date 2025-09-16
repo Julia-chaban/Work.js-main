@@ -2,6 +2,12 @@ import { getComments, postComment, setAuthToken } from "./api.js";
 import { renderComments, refreshInterface } from "./renderComments.js";
 import { handleLikeClick } from "./clickHand.js";
 
+const loginForm = document.querySelector("#loginForm");
+const addForm = document.querySelector(".add-form");
+const authorField = document.querySelector(".add-form-name");
+const commentField = document.querySelector(".add-form-text");
+const commentsList = document.querySelector(".comments-list");
+
 const demoComments = [
   {
     id: "cmt1",
@@ -68,11 +74,10 @@ function saveNewComment(comment) {
       hideGlobalLoader();
     });
 }
-const loginForm = document.querySelector("#loginForm");
-const addForm = document.querySelector(".add-form");
-
-function checkAutorization() {
-  if (localStorage.getItem("isLoggedIn") === "true") {
+function toggleForms(isLoggedIn) {
+  const loginForm = document.querySelector("#loginForm");
+  const commentForm = document.querySelector(".add-form");
+  if (isLoggedIn) {
     loginForm.classList.add("hidden");
     addForm.classList.remove("hidden");
   } else {
@@ -83,7 +88,8 @@ function checkAutorization() {
 document.querySelector("#loginForm").addEventListener("submit", (event) => {
   event.preventDefault();
   localStorage.setItem("isLoggedIn", true);
-  checkAutorization();
+  setAuthToken("AUTH_TOKEN");
+  toggleForms(true);
 });
 
 document.querySelector(".add-form").addEventListener("submit", (e) => {
@@ -116,6 +122,7 @@ document.querySelector(".add-form").addEventListener("submit", (e) => {
 });
 
 window.onload = () => {
-  checkAutorization();
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === true;
+  toggleForms(isLoggedIn);
   loadComments();
 };

@@ -81,11 +81,7 @@ body {
 
 
 
-.alert-error {
-  color: red;
-  font-size: 14px;
-  margin-top: 10px;
-}
+
 
 
 .login input[type="email"],
@@ -99,7 +95,8 @@ body {
 
 }
 
-.login button {
+.login button,
+.add-form-button {
   font-family: Arial, Helvetica, sans-serif;
   width: 100%;
   padding: 10px;
@@ -112,7 +109,8 @@ body {
   font-size: 20px;
 }
 
-.login button:hover {
+.login button:hover,
+.add-form-button:hover {
   background-color: #a6d427;
 }
 
