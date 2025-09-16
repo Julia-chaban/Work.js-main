@@ -5,7 +5,7 @@ export function setAuthToken(token) {
 }
 
 export function getComments() {
-  return fetch("https://wedev-api.sky.pro/api/v2/julia-chaban/comments", {
+  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
     method: "GET",
     headers: {
       Authorization: `Bearer ${AUTH_TOKEN}`,
@@ -19,7 +19,7 @@ export function getComments() {
 }
 
 export function postComment(comment) {
-  return fetch("https://wedev-api.sky.pro/api/v2/julia-chaban/comments ", {
+  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments ", {
     method: "POST",
 
     body: JSON.stringify(comment),

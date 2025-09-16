@@ -61,10 +61,9 @@ function saveNewComment(comment) {
 
   postComment(comment)
     .then(() => {
-      renderComments(allComments);
       loadComments();
+      renderComments(allComments);
     })
-
     .finally(() => {
       hideGlobalLoader();
     });
@@ -106,10 +105,14 @@ document.querySelector(".add-form").addEventListener("submit", (e) => {
     date: new Date().toLocaleString(),
   };
 
-  saveNewComment(newComment);
-
-  document.querySelector(".add-form-name").value = "";
-  document.querySelector(".add-form-text").value = "";
+  saveNewComment(newComment)
+    .then(() => {
+      document.querySelector(".add-form-name").value = "";
+      document.querySelector(".add-form-text").value = "";
+    })
+    .catch((error) => {
+      alert("Комментарий слишком короткий.Повторите попытку");
+    });
 });
 
 window.onload = () => {
