@@ -4,8 +4,12 @@ export function setAuthToken(token) {
   AUTH_TOKEN = token || "";
 }
 
+export function getAuthToken() {
+  return AUTH_TOKEN;
+}
+
 export function getComments() {
-  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments", {
+  return fetch("https://wedev-api.sky.pro/api/v2/julia-chaban/comments", {
     method: "GET",
     headers: {
       Authorization: `Bearer ${AUTH_TOKEN}`,
@@ -19,34 +23,68 @@ export function getComments() {
 }
 
 export function postComment(comment) {
-  return fetch("https://wedev-api.sky.pro/api/v1/julia-chaban/comments ", {
+  return fetch("https://wedev-api.sky.pro/api/v2/julia-chaban/comments", {
     method: "POST",
-
+    headers: {
+      Authorization: `Bearer ${AUTH_TOKEN}`,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(comment),
+  }).then((response) => {
+    if (!response.ok) {
+      let errorMessage = "";
+      if (response.status === 400) {
+        errorMessage = `Неверный запрос. Проверьте правильность введённых данных.`;
+      } else if (response.status === 401) {
+        errorMessage = "Не авторизованы. Необходимо войти в систему.";
+      } else if (response.status === 500) {
+        errorMessage = "Ошибка на стороне сервера. Попробуйте позднее.";
+      } else {
+        errorMessage = `Неизвестная ошибка (${response.status}). Попробуйте снова.`;
+      }
+      throw new Error(errorMessage);
+    }
+    return response.json();
+  });
+}
+
+export function loginUser(login, password) {
+  return fetch("https://wedev-api.sky.pro/api/user/login", {
+    method: "POST",
+    headers: {},
+    body: JSON.stringify({
+      login: login,
+      password: password,
+    }),
   })
     .then((response) => {
       if (!response.ok) {
-        let errorMessage = "";
-        if (response.status === 400) {
-          errorMessage = `Неверный запрос. Проверьте правильность введённых данных.`;
-        } else if (response.status === 401) {
-          errorMessage = "Не авторизованы. Необходимо войти в систему.";
-        } else if (response.status === 403) {
-          errorMessage = "Доступ запрещён. Возможно, истёк срок сессии.";
-        } else if (response.status === 404) {
-          errorMessage = "Ресурс не найден. Обратитесь к администратору.";
-        } else if (response.status === 500) {
-          errorMessage = "Ошибка на стороне сервера. Попробуйте позднее.";
-        } else {
-          errorMessage = `Неизвестная ошибка (${response.status}). Попробуйте снова.`;
-        }
-        throw new Error(errorMessage);
+        return response.json().then((errorData) => {
+          if (errorData.error) {
+            throw new Error(errorData.error);
+          } else if (response.status === 400) {
+            throw new Error("Неверный логин или пароль");
+          } else if (response.status === 401) {
+            throw new Error("Неверные учетные данные");
+          } else if (response.status === 500) {
+            throw new Error("Ошибка сервера. Попробуйте позже.");
+          } else {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+          }
+        });
       }
       return response.json();
     })
+    .then((data) => {
+      if (data.user && data.user.token) {
+        setAuthToken(data.user.token);
+        return data;
+      } else {
+        throw new Error("Токен не получен от сервера");
+      }
+    })
     .catch((error) => {
-      console.error("Ошибка при отправке комментария:", error.message);
-      alert("Возникла ошибка при отправке комментария. Попробуйте снова.");
+      console.error("Ошибка в loginUser:", error);
       throw error;
     });
 }

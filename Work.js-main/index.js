@@ -1,37 +1,14 @@
-import { getComments, postComment, setAuthToken } from "./api.js";
-import { renderComments, refreshInterface } from "./renderComments.js";
-import { handleLikeClick } from "./clickHand.js";
+import { getComments, postComment, setAuthToken, loginUser } from "./api.js";
+import { renderComments } from "./renderComments.js";
 
-const loginForm = document.querySelector("#loginForm");
-const addForm = document.querySelector(".add-form");
-const authorField = document.querySelector(".add-form-name");
-const commentField = document.querySelector(".add-form-text");
-const commentsList = document.querySelector(".comments-list");
-
-const demoComments = [
-  {
-    id: "cmt1",
-    name: "Глеб Фокин",
-    text: "Это будет первый комментарий на этой странице!",
-    likes: 3,
-    isLiked: false,
-    date: "12.02.22 12:18",
-  },
-  {
-    id: "cmt2",
-    name: "Варвара Н.",
-    text: "Мне нравится как оформлена эта страница! ❤️",
-    likes: 75,
-    isLiked: true,
-    date: "13.02.22 19:22",
-  },
-];
 let allComments = [];
 
 function showGlobalLoader(text) {
   const loadingScreen = document.getElementById("loading-screen");
   loadingScreen.classList.remove("hidden");
-  loadingScreen.innerText = text || "Загрузка";
+  if (text) {
+    loadingScreen.querySelector("p").textContent = text;
+  }
 }
 
 function hideGlobalLoader() {
@@ -45,12 +22,14 @@ function loadComments() {
   return getComments()
     .then((response) => {
       if (response?.comments && Array.isArray(response.comments)) {
-        allComments = response.comments;
+        allComments = response.comments.map((comment) => ({
+          ...comment,
+          isLiked: comment.isLiked || false,
+        }));
       } else {
-        console.warn(
-          "Сервер не предоставил комментарии. Используем существующие данные."
-        );
+        console.warn("Сервер не предоставил комментарии.");
       }
+      renderComments(allComments);
       return allComments;
     })
     .catch((error) => {
@@ -70,12 +49,11 @@ function saveNewComment(comment) {
     .then(() => {
       return loadComments();
     })
-    .then((updatedComments) => {
-      renderComments(updatedComments);
-    })
     .catch((error) => {
       console.error("Ошибка при отправке комментария", error);
-      alert("Комментарий слишком короткий. Повторите попытку");
+      alert(
+        error.message || "Ошибка при отправке комментария. Попробуйте еще раз."
+      );
       throw error;
     })
     .finally(() => {
@@ -84,32 +62,66 @@ function saveNewComment(comment) {
 }
 
 function toggleForms(isLoggedIn) {
-  const loginForm = document.querySelector("#loginForm");
+  const loginForm = document.getElementById("loginForm");
   const commentForm = document.querySelector(".add-form");
+
   if (isLoggedIn) {
     loginForm.classList.add("hidden");
-    addForm.classList.remove("hidden");
+    commentForm.classList.remove("hidden");
   } else {
     loginForm.classList.remove("hidden");
-    addForm.classList.add("hidden");
+    commentForm.classList.add("hidden");
   }
 }
 
-document.querySelector("#loginForm").addEventListener("submit", (event) => {
+document.getElementById("loginForm").addEventListener("submit", (event) => {
   event.preventDefault();
-  localStorage.setItem("isLoggedIn", "true");
-  setAuthToken("AUTH_TOKEN");
-  toggleForms(true);
-});
 
+  const login = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
+  const passwordInput = document.getElementById("loginPassword");
+  console.log("Отправляемые данные:", login, password);
+
+  if (!login || !password) {
+    alert("Заполните все поля для входа.");
+    return;
+  }
+
+  showGlobalLoader("Авторизация...");
+
+  loginUser(login, password)
+    .then((data) => {
+      console.log("Успешная авторизация:", data);
+
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("authToken", data.user.token);
+
+      toggleForms(true);
+      alert("Авторизация успешна!");
+      loadComments();
+    })
+    .catch((error) => {
+      console.error("Полная ошибка авторизации:", error);
+      alert(error.message || "Ошибка авторизации. Попробуйте снова.");
+      passwordInput.value = "";
+    })
+    .finally(() => {
+      hideGlobalLoader();
+    });
+});
 document.querySelector(".add-form").addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const name = document.querySelector(".add-form-name").value.trim();
-  const text = document.querySelector(".add-form-text").value.trim();
+  const name = document.getElementById("author").value.trim();
+  const text = document.getElementById("comment").value.trim();
 
   if (!name || !text) {
-    alert("Заполните поля.");
+    alert("Заполните все поля.");
+    return;
+  }
+
+  if (text.length < 3) {
+    alert("Комментарий должен содержать минимум 3 символа.");
     return;
   }
 
@@ -123,18 +135,25 @@ document.querySelector(".add-form").addEventListener("submit", (e) => {
 
   saveNewComment(newComment)
     .then(() => {
-      document.querySelector(".add-form-name").value = "";
-      document.querySelector(".add-form-text").value = "";
+      document.getElementById("author").value = "";
+      document.getElementById("comment").value = "";
     })
     .catch((error) => {
       console.log("Ошибка при сохранении комментария:", error);
     });
 });
 
-window.onload = () => {
+window.addEventListener("load", () => {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const authToken = localStorage.getItem("authToken");
+
+  if (authToken) {
+    setAuthToken(authToken);
+  }
+
   toggleForms(isLoggedIn);
-  loadComments().then((comments) => {
-    renderComments(comments);
-  });
-};
+
+  if (isLoggedIn) {
+    loadComments();
+  }
+});
