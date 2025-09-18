@@ -42,20 +42,21 @@ function hideGlobalLoader() {
 function loadComments() {
   showGlobalLoader("Загрузка комментариев...");
 
-  getComments()
+  return getComments()
     .then((response) => {
       if (response?.comments && Array.isArray(response.comments)) {
         allComments = response.comments;
       } else {
         console.warn(
-          "Сервер не предоставил комментарии.Используем существующие данные."
+          "Сервер не предоставил комментарии. Используем существующие данные."
         );
       }
-      renderComments(allComments);
+      return allComments;
     })
     .catch((error) => {
-      console.error("Ошибка при загрузке комментария", error);
-      alert("Ошибка при загрузке комментария.Попробуйте еще раз.");
+      console.error("Ошибка при загрузке комментариев", error);
+      alert("Ошибка при загрузке комментариев. Попробуйте еще раз.");
+      return allComments;
     })
     .finally(() => {
       hideGlobalLoader();
@@ -65,15 +66,23 @@ function loadComments() {
 function saveNewComment(comment) {
   showGlobalLoader("Отправка комментария...");
 
-  postComment(comment)
+  return postComment(comment)
     .then(() => {
-      loadComments();
-      renderComments(allComments);
+      return loadComments();
+    })
+    .then((updatedComments) => {
+      renderComments(updatedComments);
+    })
+    .catch((error) => {
+      console.error("Ошибка при отправке комментария", error);
+      alert("Комментарий слишком короткий. Повторите попытку");
+      throw error;
     })
     .finally(() => {
       hideGlobalLoader();
     });
 }
+
 function toggleForms(isLoggedIn) {
   const loginForm = document.querySelector("#loginForm");
   const commentForm = document.querySelector(".add-form");
@@ -85,9 +94,10 @@ function toggleForms(isLoggedIn) {
     addForm.classList.add("hidden");
   }
 }
+
 document.querySelector("#loginForm").addEventListener("submit", (event) => {
   event.preventDefault();
-  localStorage.setItem("isLoggedIn", true);
+  localStorage.setItem("isLoggedIn", "true");
   setAuthToken("AUTH_TOKEN");
   toggleForms(true);
 });
@@ -117,12 +127,14 @@ document.querySelector(".add-form").addEventListener("submit", (e) => {
       document.querySelector(".add-form-text").value = "";
     })
     .catch((error) => {
-      alert("Комментарий слишком короткий.Повторите попытку");
+      console.log("Ошибка при сохранении комментария:", error);
     });
 });
 
 window.onload = () => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === true;
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   toggleForms(isLoggedIn);
-  loadComments();
+  loadComments().then((comments) => {
+    renderComments(comments);
+  });
 };
