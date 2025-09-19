@@ -27,7 +27,6 @@ export function postComment(comment) {
     method: "POST",
     headers: {
       Authorization: `Bearer ${AUTH_TOKEN}`,
-      "Content-Type": "application/json",
     },
     body: JSON.stringify(comment),
   }).then((response) => {
@@ -48,9 +47,10 @@ export function postComment(comment) {
   });
 }
 
-export function loginUser(login, password) {
+export function apiLoginUser(login, password) {
   return fetch("https://wedev-api.sky.pro/api/user/login", {
     method: "POST",
+    mode: "cors",
     headers: {},
     body: JSON.stringify({
       login: login,
@@ -84,7 +84,7 @@ export function loginUser(login, password) {
       }
     })
     .catch((error) => {
-      console.error("Ошибка в loginUser:", error);
+      console.error("Ошибка в apiLoginUser:", error);
       throw error;
     });
 }

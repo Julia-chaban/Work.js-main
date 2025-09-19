@@ -1,4 +1,4 @@
-import { getComments, postComment, setAuthToken, loginUser } from "./api.js";
+import { getComments, postComment, setAuthToken, apiLoginUser } from "./api.js";
 import { renderComments } from "./renderComments.js";
 
 let allComments = [];
@@ -52,7 +52,7 @@ function saveNewComment(comment) {
     .catch((error) => {
       console.error("Ошибка при отправке комментария", error);
       alert(
-        error.message || "Ошибка при отправке комментария. Попробуйте еще раз."
+        error.message("Ошибка при отправке комментария. Попробуйте еще раз.")
       );
       throw error;
     })
@@ -89,7 +89,7 @@ document.getElementById("loginForm").addEventListener("submit", (event) => {
 
   showGlobalLoader("Авторизация...");
 
-  loginUser(login, password)
+  apiLoginUser(login, password)
     .then((data) => {
       console.log("Успешная авторизация:", data);
 
@@ -102,7 +102,7 @@ document.getElementById("loginForm").addEventListener("submit", (event) => {
     })
     .catch((error) => {
       console.error("Полная ошибка авторизации:", error);
-      alert(error.message || "Ошибка авторизации. Попробуйте снова.");
+      alert(error.message, "Ошибка авторизации. Попробуйте снова.");
       passwordInput.value = "";
     })
     .finally(() => {
@@ -150,7 +150,6 @@ window.addEventListener("load", () => {
   if (authToken) {
     setAuthToken(authToken);
   }
-
   toggleForms(isLoggedIn);
 
   if (isLoggedIn) {
