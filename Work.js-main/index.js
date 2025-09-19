@@ -34,9 +34,6 @@ function loadComments() {
     .catch((error) => {
       console.error("Ошибка при загрузке комментариев", error);
       alert("Ошибка при загрузке комментариев. Попробуйте еще раз.");
-    })
-    .finally(() => {
-      hideGlobalLoader();
     });
 }
 
@@ -53,9 +50,6 @@ function saveNewComment(comment) {
         error.message || "Ошибка при отправке комментария. Попробуйте еще раз."
       );
       throw error;
-    })
-    .finally(() => {
-      hideGlobalLoader();
     });
 }
 
@@ -139,6 +133,9 @@ document.querySelector(".add-form").addEventListener("submit", (e) => {
     })
     .catch((error) => {
       console.log("Ошибка при сохранении комментария:", error);
+    })
+    .finally(() => {
+      hideGlobalLoader();
     });
 });
 
@@ -152,6 +149,8 @@ window.addEventListener("load", () => {
   toggleForms(isLoggedIn);
 
   if (isLoggedIn) {
-    loadComments();
+    loadComments().finally(() => {
+      hideGlobalLoader();
+    });
   }
 });
