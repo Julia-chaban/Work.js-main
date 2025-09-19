@@ -30,12 +30,10 @@ function loadComments() {
         console.warn("Сервер не предоставил комментарии.");
       }
       renderComments(allComments);
-      return allComments;
     })
     .catch((error) => {
       console.error("Ошибка при загрузке комментариев", error);
       alert("Ошибка при загрузке комментариев. Попробуйте еще раз.");
-      return allComments;
     })
     .finally(() => {
       hideGlobalLoader();
@@ -52,7 +50,7 @@ function saveNewComment(comment) {
     .catch((error) => {
       console.error("Ошибка при отправке комментария", error);
       alert(
-        error.message("Ошибка при отправке комментария. Попробуйте еще раз.")
+        error.message || "Ошибка при отправке комментария. Попробуйте еще раз."
       );
       throw error;
     })
@@ -98,17 +96,18 @@ document.getElementById("loginForm").addEventListener("submit", (event) => {
 
       toggleForms(true);
       alert("Авторизация успешна!");
-      loadComments();
+      return loadComments();
     })
     .catch((error) => {
       console.error("Полная ошибка авторизации:", error);
-      alert(error.message, "Ошибка авторизации. Попробуйте снова.");
+      alert(error.message || "Ошибка авторизации. Попробуйте снова.");
       passwordInput.value = "";
     })
     .finally(() => {
       hideGlobalLoader();
     });
 });
+
 document.querySelector(".add-form").addEventListener("submit", (e) => {
   e.preventDefault();
 
