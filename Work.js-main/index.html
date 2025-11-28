@@ -10,18 +10,39 @@
 </head>
 
 <body>
+
   <div class="container">
-    <ul class="comments"></ul>
-    <form class="add-form">
-      <label for="autor">Автор</label>
-      <input type="text" id="autor" class="add-form-name" placeholder="Введите ваше имя">
-      <label for="commentText">Комментарий:</label>
-      <textarea id="commentText" class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
+    <div class="login">
+
+      <form id="loginForm">
+        <h2 class="inlet">Регистрация</h2>
+        <input id="loginEmail" type="text" placeholder="Email" required />
+        <input id="loginPassword" type="password" placeholder="Пароль" required />
+        <button type="submit">Войти</button>
+      </form>
+    </div>
+
+    <ul class="comments">
+    </ul>
+
+    <div id="loading-screen" class="hidden">
+      <p>Загрузка комментариев...</p>
+    </div>
+    <form class="add-form hidden">
+
+      <label for="author">Автор</label>
+      <input type="text" id="author" class="add-form-name" placeholder="Введите ваше имя">
+      <label for="comment">Комментарий:</label>
+      <textarea id="comment" class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
+
       <button class="add-form-button">Отправить</button>
     </form>
   </div>
 
-  <script type="module" src="index.js"></script>
+  <div id="global-loader">Loading... </div>
+
+  <script type="module" src="index.js">
+  </script>
 </body>
 
 </html>
